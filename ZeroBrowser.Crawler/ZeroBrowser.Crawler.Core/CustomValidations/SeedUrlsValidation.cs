@@ -7,7 +7,7 @@ using System.Text;
 namespace ZeroBrowser.Crawler.Core.CustomValidations
 {
     public class SeedUrlsValidation : ValidationAttribute
-    {
+    {        
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var _seedUrls = value as string[];
