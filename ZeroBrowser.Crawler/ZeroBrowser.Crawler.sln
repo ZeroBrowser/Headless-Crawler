@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroBrowser.Crawler.Api", "ZeroBrowser.Crawler.Api\ZeroBrowser.Crawler.Api.csproj", "{1BE85EA5-311A-4768-AC6F-683C0C9233DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroBrowser.Crawler.Api", "ZeroBrowser.Crawler.Api\ZeroBrowser.Crawler.Api.csproj", "{1BE85EA5-311A-4768-AC6F-683C0C9233DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroBrowser.Crawler.Core", "ZeroBrowser.Crawler.Core\ZeroBrowser.Crawler.Core.csproj", "{88598E2F-F77F-4A27-8CB9-AABB259F34F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroBrowser.Crawler.Core", "ZeroBrowser.Crawler.Core\ZeroBrowser.Crawler.Core.csproj", "{88598E2F-F77F-4A27-8CB9-AABB259F34F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroBrowser.Crawler.Test", "ZeroBrowser.Crawler.Test\ZeroBrowser.Crawler.Test.csproj", "{1C046CAA-9E0D-4B51-8200-F2C80ED8FA9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{88598E2F-F77F-4A27-8CB9-AABB259F34F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88598E2F-F77F-4A27-8CB9-AABB259F34F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88598E2F-F77F-4A27-8CB9-AABB259F34F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C046CAA-9E0D-4B51-8200-F2C80ED8FA9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C046CAA-9E0D-4B51-8200-F2C80ED8FA9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C046CAA-9E0D-4B51-8200-F2C80ED8FA9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C046CAA-9E0D-4B51-8200-F2C80ED8FA9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

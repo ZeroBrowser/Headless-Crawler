@@ -659,21 +659,19 @@
   },
   "packageFolders": {
     "C:\\Users\\raham\\.nuget\\packages\\": {},
-    "C:\\Microsoft\\Xamarin\\NuGet\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Microsoft\\Xamarin\\NuGet\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Projects\\0browser-crawler\\ZeroBrowser.Crawler\\ZeroBrowser.Crawler.Api\\ZeroBrowser.Crawler.Api.csproj",
+      "projectUniqueName": "C:\\Users\\raham\\source\\repos\\ZeroBrowser\\0browser-crawler\\ZeroBrowser.Crawler\\ZeroBrowser.Crawler.Api\\ZeroBrowser.Crawler.Api.csproj",
       "projectName": "ZeroBrowser.Crawler.Api",
-      "projectPath": "C:\\Projects\\0browser-crawler\\ZeroBrowser.Crawler\\ZeroBrowser.Crawler.Api\\ZeroBrowser.Crawler.Api.csproj",
+      "projectPath": "C:\\Users\\raham\\source\\repos\\ZeroBrowser\\0browser-crawler\\ZeroBrowser.Crawler\\ZeroBrowser.Crawler.Api\\ZeroBrowser.Crawler.Api.csproj",
       "packagesPath": "C:\\Users\\raham\\.nuget\\packages\\",
-      "outputPath": "C:\\Projects\\0browser-crawler\\ZeroBrowser.Crawler\\ZeroBrowser.Crawler.Api\\obj\\",
+      "outputPath": "C:\\Users\\raham\\source\\repos\\ZeroBrowser\\0browser-crawler\\ZeroBrowser.Crawler\\ZeroBrowser.Crawler.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Microsoft\\Xamarin\\NuGet\\",
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        "C:\\Microsoft\\Xamarin\\NuGet\\"
       ],
       "configFilePaths": [
         "C:\\Users\\raham\\AppData\\Roaming\\NuGet\\NuGet.Config",

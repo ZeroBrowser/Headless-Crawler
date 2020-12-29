@@ -1,11 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "x8XUSEzZg3oVjNgKliRulnqse2jwRBogzgNshIb3hg61uTIvECsH07yU0u3y2PjqLTrMOht1EfRntToELzcAVQ==",
+  "dgSpecHash": "vejR2SkGvo93j46STCxfXSU0C174Uexh2QCBViuMSjc7Uy2LUOyJ3mztb5kAJDRnRkRx5OrO0tfpfBhRt80AzQ==",
   "success": true,
-  "projectFilePath": "C:\\Projects\\0browser-crawler\\ZeroBrowser.Crawler\\ZeroBrowser.Crawler.Core\\ZeroBrowser.Crawler.Core.csproj",
-  "expectedPackageFiles": [
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\raham\\source\\repos\\ZeroBrowser\\0browser-crawler\\ZeroBrowser.Crawler\\ZeroBrowser.Crawler.Core\\ZeroBrowser.Crawler.Core.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }

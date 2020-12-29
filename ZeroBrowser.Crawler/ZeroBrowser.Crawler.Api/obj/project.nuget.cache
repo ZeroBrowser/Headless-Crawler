@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "ycMWxWEtF93BDe4SR3iUFIUa7ghQaXb+DoYAUrXJmEyCw5zdkJg+Kl+wpkONqrvrS+lz7NjSC1achFtzDyE5VQ==",
+  "dgSpecHash": "3aY2U/M/RS4BSmDbhqgkQNJ6I2BTlfbTKBP4TI0tvBrSh9gOh1ol3GMM+f1KUGZ0cx+pK3GWNEjMraJTSyA51A==",
   "success": true,
-  "projectFilePath": "C:\\Projects\\0browser-crawler\\ZeroBrowser.Crawler\\ZeroBrowser.Crawler.Api\\ZeroBrowser.Crawler.Api.csproj",
+  "projectFilePath": "C:\\Users\\raham\\source\\repos\\ZeroBrowser\\0browser-crawler\\ZeroBrowser.Crawler\\ZeroBrowser.Crawler.Api\\ZeroBrowser.Crawler.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\raham\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\5.0.1\\microsoft.aspnetcore.authentication.jwtbearer.5.0.1.nupkg.sha512",
     "C:\\Users\\raham\\.nuget\\packages\\microsoft.aspnetcore.authentication.openidconnect\\5.0.1\\microsoft.aspnetcore.authentication.openidconnect.5.0.1.nupkg.sha512",
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
+    "C:\\Users\\raham\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\raham\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
     "C:\\Users\\raham\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\6.7.1\\microsoft.identitymodel.jsonwebtokens.6.7.1.nupkg.sha512",
     "C:\\Users\\raham\\.nuget\\packages\\microsoft.identitymodel.logging\\6.7.1\\microsoft.identitymodel.logging.6.7.1.nupkg.sha512",
@@ -20,7 +20,7 @@
     "C:\\Users\\raham\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\5.6.3\\swashbuckle.aspnetcore.swaggergen.5.6.3.nupkg.sha512",
     "C:\\Users\\raham\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\5.6.3\\swashbuckle.aspnetcore.swaggerui.5.6.3.nupkg.sha512",
     "C:\\Users\\raham\\.nuget\\packages\\system.identitymodel.tokens.jwt\\6.7.1\\system.identitymodel.tokens.jwt.6.7.1.nupkg.sha512",
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.security.cryptography.cng\\4.5.0\\system.security.cryptography.cng.4.5.0.nupkg.sha512"
+    "C:\\Users\\raham\\.nuget\\packages\\system.security.cryptography.cng\\4.5.0\\system.security.cryptography.cng.4.5.0.nupkg.sha512"
   ],
   "logs": []
 }
