@@ -15,10 +15,9 @@ namespace ZeroBrowser.Crawler.Test
 
             //When
             var crawler = new Core.Crawler(null, headlessBrowserUrl);
-
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => crawler.Crawl());
 
-            Assert.Equal("The SeedUrls field is required. (Parameter '_seedUrls')", ex.Message);
+            Assert.Equal("The SeedUrls field is required. (Parameter 'SeedUrls')", ex.Message);
         }
 
         [Theory]
@@ -31,10 +30,9 @@ namespace ZeroBrowser.Crawler.Test
 
             //When
             var crawler = new Core.Crawler(new[] { seedUrl }, headlessBrowserUrl);
-
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => crawler.Crawl());
 
-            Assert.Equal("Null/Empty (Parameter '_seedUrls')", ex.Message);
+            Assert.Equal("Null/Empty (Parameter 'SeedUrls')", ex.Message);
         }
 
 
@@ -53,13 +51,25 @@ namespace ZeroBrowser.Crawler.Test
 
             //When
             var crawler = new Core.Crawler(new[] { seedUrl }, headlessBrowserUrl);
-
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => crawler.Crawl());
 
-            Assert.Equal($"{expectedError} (Parameter '_seedUrls')", ex.Message);
+            Assert.Equal($"{expectedError} (Parameter 'SeedUrls')", ex.Message);
         }
 
 
+        [Fact]
+        public async Task CheckHeadlessBrowserUrl_Null_ThowException_Test()
+        {
+            //Given            
+            var seedUrls = new[] { "http://test" };
+
+            //When
+            var crawler = new Core.Crawler(seedUrls, null);
+            var ex = await Assert.ThrowsAsync<ArgumentException>(() => crawler.Crawl());
+
+            //Then
+            Assert.Equal("The HeadlessBrowserUrl field is required. (Parameter 'HeadlessBrowserUrl')", ex.Message);
+        }
 
     }
 }

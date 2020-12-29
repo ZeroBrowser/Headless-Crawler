@@ -37,14 +37,12 @@ namespace ZeroBrowser.Crawler.Core
             var errorResults = new List<ValidationResult>();
             var context = new ValidationContext(_parameters, serviceProvider: null, items: null);
             if (!Validator.TryValidateObject(_parameters, context, errorResults, true))
-            {
-                var errors = string.Join(",", errorResults.Select(a => a.ErrorMessage));
-                throw new ArgumentException(errors, "_seedUrls");
+            {             
+                var firstError = errorResults.FirstOrDefault();
+
+                if (firstError != null)
+                    throw new ArgumentException(firstError.ErrorMessage, firstError.MemberNames.First());
             }
-
-
-            //Validate _headlessBrowserUrl
-
         }
 
     }

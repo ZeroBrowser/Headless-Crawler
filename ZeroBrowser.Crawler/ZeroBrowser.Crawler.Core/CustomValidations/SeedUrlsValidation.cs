@@ -11,19 +11,19 @@ namespace ZeroBrowser.Crawler.Core.CustomValidations
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var _seedUrls = value as string[];
-
+            var membersName = new[] { validationContext.MemberName };
             foreach (var seedUrl in _seedUrls)
             {
                 if (seedUrl == default(string) || seedUrl.Length == 0)
-                    return new ValidationResult("Null/Empty");
+                    return new ValidationResult("Null/Empty", membersName);
 
                 if (!Uri.TryCreate(seedUrl, UriKind.Absolute, out Uri result))
                 {
-                    return new ValidationResult("Invalid uri");
+                    return new ValidationResult("Invalid uri", membersName);
                 }
-                else if (result.Scheme != "http" || result.Scheme != "https")
+                else if (result.Scheme != "http" && result.Scheme != "https")
                 {
-                    return new ValidationResult("Invalid scheme");
+                    return new ValidationResult("Invalid scheme", membersName);
                 }
             }
 
