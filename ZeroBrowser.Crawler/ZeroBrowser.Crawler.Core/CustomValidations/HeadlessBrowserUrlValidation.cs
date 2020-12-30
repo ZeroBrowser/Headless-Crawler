@@ -6,9 +6,9 @@ using System.Text;
 
 namespace ZeroBrowser.Crawler.Core.CustomValidations
 {
-    public class SeedUrlsValidation : UrlValidation
+    public class HeadlessBrowserUrlValidation : UrlValidation
     {
-        public SeedUrlsValidation() : base(new HashSet<string> { "http", "https" })
+        public HeadlessBrowserUrlValidation() : base(new HashSet<string> { "ws", "wss" })
         {
 
         }

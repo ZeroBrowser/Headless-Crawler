@@ -27,7 +27,7 @@ namespace ZeroBrowser.Crawler.Core
         {
             ValidateArgument();
 
-            throw new NotImplementedException();
+            return null;
         }
 
 

@@ -19,6 +19,7 @@ namespace ZeroBrowser.Crawler.Core.Models
         public string[] SeedUrls { get; private set; }
 
         [Required]
+        [HeadlessBrowserUrlValidation]
         public string HeadlessBrowserUrl { get; private set; }
     }
 }

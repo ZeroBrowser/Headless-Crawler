@@ -71,5 +71,39 @@ namespace ZeroBrowser.Crawler.Test
             Assert.Equal("The HeadlessBrowserUrl field is required. (Parameter 'HeadlessBrowserUrl')", ex.Message);
         }
 
+        [Theory]
+        [InlineData("http://www..com", "Invalid uri")]
+        [InlineData("httpp://www.", "Invalid scheme")]
+        [InlineData("httpp://", "Invalid scheme")]
+        [InlineData(".com", "Invalid uri")]
+        [InlineData("abc", "Invalid uri")]
+        [InlineData("ftp://url", "Invalid scheme")]
+        [InlineData("http://www.google.com", "Invalid scheme")]
+        public async Task CheckHeadlessBrowserUrl_BadUrl_ThowException_Test(string headlessBrowserUrl, string expectedError)
+        {
+            //Given            
+            var seedUrls = new[] { "http://test" };
+
+            //When
+            var crawler = new Core.Crawler(seedUrls, headlessBrowserUrl);
+            var ex = await Assert.ThrowsAsync<ArgumentException>(() => crawler.Crawl());
+
+            Assert.Equal($"{expectedError} (Parameter 'HeadlessBrowserUrl')", ex.Message);
+        }
+
+        [Fact]
+        public async Task CheckHeadlessBrowserUrl_Valid_Test()
+        {
+            //Given            
+            var seedUrls = new[] { "http://www.0browser.com" };
+            var headlessBrowserUrl = "wss://proxy.0browser.com";
+
+            //When
+            var crawler = new Core.Crawler(seedUrls, headlessBrowserUrl);
+            await crawler.Crawl();
+
+            //Then
+            //Should get this far
+        }
     }
 }
