@@ -8,19 +8,21 @@ namespace ZeroBrowser.Crawler.Test
     public class CrawlerTest
     {
         [Fact]
+        [Trait("Category", "Unit")]
         public async Task CheckSeedUrl_Null_ThowException_Test()
         {
             //Given            
             var headlessBrowserUrl = "http://test";
 
             //When
-            var crawler = new Core.Crawler(null, headlessBrowserUrl);
+            var crawler = new Core.Crawler(null, headlessBrowserUrl, null);
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => crawler.Crawl());
 
             Assert.Equal("The SeedUrls field is required. (Parameter 'SeedUrls')", ex.Message);
         }
 
         [Theory]
+        [Trait("Category", "Unit")]
         [InlineData(null)]
         [InlineData("")]
         public async Task CheckSeedUrl_Empty_ThowException_Test(string seedUrl)
@@ -29,7 +31,7 @@ namespace ZeroBrowser.Crawler.Test
             var headlessBrowserUrl = "http://test";
 
             //When
-            var crawler = new Core.Crawler(new[] { seedUrl }, headlessBrowserUrl);
+            var crawler = new Core.Crawler(new[] { seedUrl }, headlessBrowserUrl, null);
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => crawler.Crawl());
 
             Assert.Equal("Null/Empty (Parameter 'SeedUrls')", ex.Message);
@@ -37,6 +39,7 @@ namespace ZeroBrowser.Crawler.Test
 
 
         [Theory]
+        [Trait("Category", "Unit")]
         [InlineData("http://www..com", "Invalid uri")]
         [InlineData("httpp://www.", "Invalid scheme")]
         [InlineData("httpp://", "Invalid scheme")]
@@ -50,7 +53,7 @@ namespace ZeroBrowser.Crawler.Test
             var headlessBrowserUrl = "http://test";
 
             //When
-            var crawler = new Core.Crawler(new[] { seedUrl }, headlessBrowserUrl);
+            var crawler = new Core.Crawler(new[] { seedUrl }, headlessBrowserUrl, null);
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => crawler.Crawl());
 
             Assert.Equal($"{expectedError} (Parameter 'SeedUrls')", ex.Message);
@@ -58,13 +61,14 @@ namespace ZeroBrowser.Crawler.Test
 
 
         [Fact]
+        [Trait("Category", "Unit")]
         public async Task CheckHeadlessBrowserUrl_Null_ThowException_Test()
         {
             //Given            
             var seedUrls = new[] { "http://test" };
 
             //When
-            var crawler = new Core.Crawler(seedUrls, null);
+            var crawler = new Core.Crawler(seedUrls, null, null);
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => crawler.Crawl());
 
             //Then
@@ -72,6 +76,7 @@ namespace ZeroBrowser.Crawler.Test
         }
 
         [Theory]
+        [Trait("Category", "Unit")]
         [InlineData("http://www..com", "Invalid uri")]
         [InlineData("httpp://www.", "Invalid scheme")]
         [InlineData("httpp://", "Invalid scheme")]
@@ -85,13 +90,14 @@ namespace ZeroBrowser.Crawler.Test
             var seedUrls = new[] { "http://test" };
 
             //When
-            var crawler = new Core.Crawler(seedUrls, headlessBrowserUrl);
+            var crawler = new Core.Crawler(seedUrls, headlessBrowserUrl, null);
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => crawler.Crawl());
 
             Assert.Equal($"{expectedError} (Parameter 'HeadlessBrowserUrl')", ex.Message);
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public async Task CheckHeadlessBrowserUrl_Valid_Test()
         {
             //Given            
@@ -99,7 +105,7 @@ namespace ZeroBrowser.Crawler.Test
             var headlessBrowserUrl = "wss://proxy.0browser.com";
 
             //When
-            var crawler = new Core.Crawler(seedUrls, headlessBrowserUrl);
+            var crawler = new Core.Crawler(seedUrls, headlessBrowserUrl, null);
             await crawler.Crawl();
 
             //Then

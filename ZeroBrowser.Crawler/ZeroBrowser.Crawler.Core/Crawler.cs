@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Core.Interfaces;
 using ZeroBrowser.Crawler.Core.Models;
 
@@ -13,12 +14,13 @@ namespace ZeroBrowser.Crawler.Core
         private readonly string[] _seedUrls;
         private readonly string _headlessBrowserUrl;
         private readonly Parameters _parameters;
+        private readonly IHeadlessBrowserService _headlessBrowserService;
 
-        public Crawler(string[] seedUrls, string headlessBrowserUrl)
+        public Crawler(string[] seedUrls, string headlessBrowserUrl, IHeadlessBrowserService headlessBrowserService)
         {
             _seedUrls = seedUrls;
             _headlessBrowserUrl = headlessBrowserUrl;
-
+            _headlessBrowserService = headlessBrowserService;
             _parameters = new Parameters(_seedUrls, _headlessBrowserUrl);
         }
 
@@ -26,6 +28,7 @@ namespace ZeroBrowser.Crawler.Core
         public async Task<IAsyncEnumerable<WebPage>> Crawl()
         {
             ValidateArgument();
+
 
             return null;
         }
@@ -37,7 +40,7 @@ namespace ZeroBrowser.Crawler.Core
             var errorResults = new List<ValidationResult>();
             var context = new ValidationContext(_parameters, serviceProvider: null, items: null);
             if (!Validator.TryValidateObject(_parameters, context, errorResults, true))
-            {             
+            {
                 var firstError = errorResults.FirstOrDefault();
 
                 if (firstError != null)
