@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZeroBrowser.Crawler.Core.Models
+namespace ZeroBrowser.Crawler.Common.Models
 {
     public class WebPage
     {
