@@ -30,6 +30,8 @@ namespace ZeroBrowser.Crawler.Core
         {
             ValidateArgument();
 
+            //1. lets get page information.
+
             //_headlessBrowserService.
 
             return null;
