@@ -6,8 +6,8 @@ using ZeroBrowser.Crawler.Common.Models;
 
 namespace ZeroBrowser.Crawler.Core.Interfaces
 {
-    public interface ICrawler
+    public interface IFrontier
     {
-        Task Crawl(string url);
+        Task<IEnumerable<Uri>> Process(IEnumerable<WebPage> webPages);
     }
 }

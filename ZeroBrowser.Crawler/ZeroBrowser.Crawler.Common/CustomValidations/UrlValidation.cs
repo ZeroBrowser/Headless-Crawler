@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace ZeroBrowser.Crawler.Core.CustomValidations
+namespace ZeroBrowser.Crawler.Common.CustomValidations
 {
     public class UrlValidation : ValidationAttribute
     {

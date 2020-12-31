@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
-using ZeroBrowser.Crawler.Core.CustomValidations;
+using ZeroBrowser.Crawler.Common.CustomValidations;
 
-namespace ZeroBrowser.Crawler.Core.Models
+namespace ZeroBrowser.Crawler.Common.Models
 {
     public class Parameters
     {

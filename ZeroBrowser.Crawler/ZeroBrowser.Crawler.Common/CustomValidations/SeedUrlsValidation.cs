@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 
-namespace ZeroBrowser.Crawler.Core.CustomValidations
+namespace ZeroBrowser.Crawler.Common.CustomValidations
 {
     public class SeedUrlsValidation : UrlValidation
     {

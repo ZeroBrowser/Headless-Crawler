@@ -1,5 +1,6 @@
 ﻿using PuppeteerSharp;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
@@ -8,6 +9,11 @@ namespace ZeroBrowser.Crawler.Puppeteer
 {
     public class HeadlessBrowserService : IHeadlessBrowserService
     {
+        public Task<IEnumerable<WebPage>> GetUrls(string url)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<WebPage> GetWebPage(string seedUrl, string headlessBrowserUrl)
         {
             var options = new ConnectOptions()

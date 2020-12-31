@@ -6,49 +6,37 @@ using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
 using ZeroBrowser.Crawler.Core.Interfaces;
-using ZeroBrowser.Crawler.Core.Models;
 
 namespace ZeroBrowser.Crawler.Core
 {
     public class Crawler : ICrawler
     {
-        private readonly string[] _seedUrls;
-        private readonly string _headlessBrowserUrl;
         private readonly Parameters _parameters;
         private readonly IHeadlessBrowserService _headlessBrowserService;
+        private readonly IFrontier _frontier;
+        private readonly IBackgroundTaskQueue _backgroundTaskQueue;
 
-        public Crawler(string[] seedUrls, string headlessBrowserUrl, IHeadlessBrowserService headlessBrowserService)
+        public Crawler(IHeadlessBrowserService headlessBrowserService, IFrontier frontier, IBackgroundTaskQueue backgroundTaskQueue)
         {
-            _seedUrls = seedUrls;
-            _headlessBrowserUrl = headlessBrowserUrl;
             _headlessBrowserService = headlessBrowserService;
-            _parameters = new Parameters(_seedUrls, _headlessBrowserUrl);
+            _frontier = frontier;
+            _backgroundTaskQueue = backgroundTaskQueue;
         }
 
 
-        public async Task<IAsyncEnumerable<WebPage>> Crawl()
+        public async Task Crawl(string url)
         {
-            ValidateArgument();
-
             //1. lets get page information.
+            var urls = await _headlessBrowserService.GetUrls(url);
 
-            //_headlessBrowserService.
+            var newUrls = await _frontier.Process(urls);
 
-            return null;
-        }
-
-
-        private void ValidateArgument()
-        {
-            //Validate _seedUrls
-            var errorResults = new List<ValidationResult>();
-            var context = new ValidationContext(_parameters, serviceProvider: null, items: null);
-            if (!Validator.TryValidateObject(_parameters, context, errorResults, true))
+            foreach (var newUrl in newUrls)
             {
-                var firstError = errorResults.FirstOrDefault();
-
-                if (firstError != null)
-                    throw new ArgumentException(firstError.ErrorMessage, firstError.MemberNames.First());
+                _backgroundTaskQueue.QueueBackgroundWorkItem(async token =>
+                {
+                    await Crawl(newUrl.ToString());
+                });
             }
         }
 
