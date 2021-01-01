@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ZeroBrowser.Crawler.Common.Models;
 
 namespace ZeroBrowser.Crawler.Api.Controllers
 {
@@ -19,7 +20,7 @@ namespace ZeroBrowser.Crawler.Api.Controllers
         }
 
         [HttpPost]
-        public IEnumerable<WeatherForecast> Post()
+        public IEnumerable<WeatherForecast> Post([FromBody]Parameters parameter)
         {
             throw new NotImplementedException();
         }
