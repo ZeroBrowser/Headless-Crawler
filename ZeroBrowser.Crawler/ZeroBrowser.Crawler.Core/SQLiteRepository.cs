@@ -8,9 +8,9 @@ namespace ZeroBrowser.Crawler.Core
 {
     public class SQLiteRepository : IRepository
     {
-        public Task<bool> Exist(Uri url)
+        public async Task<bool> Exist(Uri url)
         {
-            throw new NotImplementedException();
+            return false;
         }
     }
 }

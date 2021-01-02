@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ZeroBrowser.Crawler.Common.Models;
+using ZeroBrowser.Crawler.Core.Interfaces;
 
 namespace ZeroBrowser.Crawler.Api.Controllers
 {
@@ -13,23 +14,18 @@ namespace ZeroBrowser.Crawler.Api.Controllers
     public class CrawlController : ControllerBase
     {        
         private readonly ILogger<CrawlController> _logger;
+        private readonly ICrawler _crawler;
 
-        public CrawlController(ILogger<CrawlController> logger)
+        public CrawlController(ILogger<CrawlController> logger, ICrawler crawler)
         {
             _logger = logger;
+            _crawler = crawler;
         }
 
         [HttpPost]
-        public IEnumerable<WeatherForecast> Post([FromBody]Parameters parameter)
+        public async Task Post([FromBody]Parameters parameter)
         {
-            throw new NotImplementedException();
-        }
-
-
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
-        {
-            throw new NotImplementedException();
+            await _crawler.Crawl(parameter.SeedUrls.First());
         }
     }
 }

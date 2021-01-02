@@ -9,11 +9,38 @@ namespace ZeroBrowser.Crawler.Puppeteer
 {
     public class HeadlessBrowserService : IHeadlessBrowserService
     {
-        public Task<IEnumerable<WebPage>> GetUrls(string url)
+        private Dictionary<string, List<WebPage>> _data = new Dictionary<string, List<WebPage>>();
+
+        public HeadlessBrowserService()
         {
-            throw new NotImplementedException();
+            _data.Add("http://www.url1.com", new List<WebPage> {
+                new WebPage { URL = new Uri("http://www.url21.com") },
+                new WebPage { URL = new Uri("http://www.url22.com") } });
+
+            _data.Add("http://www.url21.com/", new List<WebPage> {
+                new WebPage { URL = new Uri("http://www.url31.com") },
+                new WebPage { URL = new Uri("http://www.url32.com") } });
+
+            _data.Add("http://www.url22.com/", new List<WebPage> {
+                new WebPage { URL = new Uri("http://www.url33.com") },
+                new WebPage { URL = new Uri("http://www.url34.com") } });
+
+
+            _data.Add("http://www.url31.com/", new List<WebPage> {
+                new WebPage { URL = new Uri("http://www.url41.com") },
+                new WebPage { URL = new Uri("http://www.url42.com") } });
+
+            _data.Add("http://www.url32.com/", new List<WebPage> {
+                new WebPage { URL = new Uri("http://www.url43.com") },
+                new WebPage { URL = new Uri("http://www.url44.com") } });
         }
 
+        public async Task<IEnumerable<WebPage>> GetUrls(string url)
+        {
+            return _data.ContainsKey(url) ? _data[url] : new List<WebPage>();
+        }
+
+        //TODO: delete
         public async Task<WebPage> GetWebPage(string seedUrl, string headlessBrowserUrl)
         {
             var options = new ConnectOptions()
@@ -28,7 +55,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
                     //var cdpSessopm = await page.Target.CreateCDPSessionAsync();
                     //cdpSessopm.MessageReceived += (o, m) =>
                     //{
-                        
+
                     //};
 
                     var response = await page.GoToAsync(seedUrl);

@@ -21,5 +21,8 @@ namespace ZeroBrowser.Crawler.Common.Models
         [Required]
         [HeadlessBrowserUrlValidation]
         public string HeadlessBrowserUrl { get; private set; }
+
+        //TODO: add limit for number of pages to crawl
+
     }
 }

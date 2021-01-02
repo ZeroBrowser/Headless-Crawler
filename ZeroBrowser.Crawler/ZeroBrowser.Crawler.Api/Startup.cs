@@ -1,16 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using ZeroBrowser.Crawler.Api.HostedService;
+using ZeroBrowser.Crawler.Common.Interfaces;
+using ZeroBrowser.Crawler.Core;
+using ZeroBrowser.Crawler.Core.Interfaces;
+using ZeroBrowser.Crawler.Puppeteer;
 
 namespace ZeroBrowser.Crawler.Api
 {
@@ -26,7 +24,14 @@ namespace ZeroBrowser.Crawler.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddHostedService<>();
+            services.AddScoped<ICrawler, Core.Crawler>();
+            services.AddScoped<IHeadlessBrowserService, HeadlessBrowserService>();
+            services.AddScoped<IFrontier, Frontier>();
+            services.AddScoped<IRepository, SQLiteRepository>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
+            services.AddHostedService<ParallelQueuedHostedService>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
