@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 
 namespace ZeroBrowser.Crawler.Core
@@ -12,30 +13,40 @@ namespace ZeroBrowser.Crawler.Core
 
         }
 
-        public DbSet<CrawlerState> CrawlerStates { get; set; }
+        public DbSet<CrawledData> CrawlerStates { get; set; }
 
-        public enum CrawlerStatus
+        public enum CrawlStatus
         {
-            NotCrawled,
-            Crawled
+            Pending,
+            Processing,
+            Processed
         }
 
         public enum HealthStatus
         {
+            Pending,
             Healthy,
-            NotHealthy
+            UnHealthy
         }
 
 
-        public class CrawlerState
+        public class CrawledData
         {
-            public int CrawlerStateId { get; set; }
+            public Guid Id { get; set; }
 
             public string Url { get; set; }
 
-            public CrawlerStatus Status { get; set; }
+            public string HashedUrl { get; set; }
+
+            public CrawlStatus CrawlStatus { get; set; }
 
             public HealthStatus HealthStatus { get; set; }
+
+            public HttpStatusCode HttpStatusCode { get; set; }
+
+            public DateTime Inserted { get; set; }
+
+            public DateTime Updated { get; set; }
         }
     }
 }
