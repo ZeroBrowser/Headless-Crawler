@@ -7,6 +7,6 @@ namespace ZeroBrowser.Crawler.Common.Interfaces
 {
     public interface IRepository
     {
-        Task<bool> Exist(Uri url);
+        Task<bool> Exist(string url);
     }
 }

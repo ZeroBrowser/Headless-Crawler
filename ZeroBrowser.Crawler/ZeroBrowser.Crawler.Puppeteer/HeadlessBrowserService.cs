@@ -14,25 +14,25 @@ namespace ZeroBrowser.Crawler.Puppeteer
         public HeadlessBrowserService()
         {
             _data.Add("http://www.url1.com", new List<WebPage> {
-                new WebPage { URL = new Uri("http://www.url21.com") },
-                new WebPage { URL = new Uri("http://www.url22.com") } });
+                new WebPage { Url = "http://www.url21.com" },
+                new WebPage { Url = "http://www.url22.com" } });
 
-            _data.Add("http://www.url21.com/", new List<WebPage> {
-                new WebPage { URL = new Uri("http://www.url31.com") },
-                new WebPage { URL = new Uri("http://www.url32.com") } });
+            _data.Add("http://www.url21.com", new List<WebPage> {
+                new WebPage { Url = "http://www.url31.com" },
+                new WebPage { Url = "http://www.url32.com" } });
 
-            _data.Add("http://www.url22.com/", new List<WebPage> {
-                new WebPage { URL = new Uri("http://www.url33.com") },
-                new WebPage { URL = new Uri("http://www.url34.com") } });
+            _data.Add("http://www.url22.com", new List<WebPage> {
+                new WebPage { Url = "http://www.url33.com" },
+                new WebPage { Url = "http://www.url34.com" } });
 
 
-            _data.Add("http://www.url31.com/", new List<WebPage> {
-                new WebPage { URL = new Uri("http://www.url41.com") },
-                new WebPage { URL = new Uri("http://www.url42.com") } });
+            _data.Add("http://www.url31.com", new List<WebPage> {
+                new WebPage { Url = "http://www.url41.com" },
+                new WebPage { Url = "http://www.url42.com" } });
 
-            _data.Add("http://www.url32.com/", new List<WebPage> {
-                new WebPage { URL = new Uri("http://www.url43.com") },
-                new WebPage { URL = new Uri("http://www.url44.com") } });
+            _data.Add("http://www.url32.com", new List<WebPage> {
+                new WebPage { Url = "http://www.url43.com" },
+                new WebPage { Url = "http://www.url44.com" } });
         }
 
         public async Task<IEnumerable<WebPage>> GetUrls(string url)

@@ -36,7 +36,7 @@ namespace ZeroBrowser.Crawler.Core
             //2. list of pages to crawl
             var newUrls = await _frontier.Process(urls);
 
-            //TODO: enforce limit, 
+            //TODO: enforce limit
             foreach (var newUrl in newUrls)
                 //TODO: do health check and save in DB using Repository
 

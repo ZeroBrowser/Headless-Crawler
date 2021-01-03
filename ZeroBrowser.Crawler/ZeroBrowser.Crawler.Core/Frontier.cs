@@ -17,16 +17,16 @@ namespace ZeroBrowser.Crawler.Core
             _repository = repository;
         }
 
-        public async Task<IEnumerable<Uri>> Process(IEnumerable<WebPage> webPages)
+        public async Task<IEnumerable<string>> Process(IEnumerable<WebPage> webPages)
         {
-            var pagesToCrawl = new List<Uri>();            
+            var pagesToCrawl = new List<string>();            
 
             foreach (var webPage in webPages)
             {
                 //check if we already crawled this page
-                if (!await _repository.Exist(webPage.URL))
+                if (!await _repository.Exist(webPage.Url))
                 {
-                    pagesToCrawl.Add(webPage.URL);
+                    pagesToCrawl.Add(webPage.Url);
                 }
             }
             

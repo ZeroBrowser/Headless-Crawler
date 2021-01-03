@@ -261,4 +261,5 @@ src/Dictionary\.Website/website_log\.txt
 
 *.txt
 
-identityserver_log.txt
+# SQlite DB
+*.db

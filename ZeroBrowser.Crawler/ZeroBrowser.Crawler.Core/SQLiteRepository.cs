@@ -8,7 +8,14 @@ namespace ZeroBrowser.Crawler.Core
 {
     public class SQLiteRepository : IRepository
     {
-        public async Task<bool> Exist(Uri url)
+        private readonly CrawlerContext _crawlerContext;
+
+        public SQLiteRepository(CrawlerContext crawlerContext)
+        {
+            _crawlerContext = crawlerContext;
+        }
+
+        public async Task<bool> Exist(string url)
         {
             return false;
         }
