@@ -1,4 +1,5 @@
-﻿using PuppeteerSharp;
+﻿using Newtonsoft.Json;
+using PuppeteerSharp;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,8 +11,9 @@ namespace ZeroBrowser.Crawler.Puppeteer
     public class HeadlessBrowserService : IHeadlessBrowserService
     {
         private Dictionary<string, List<WebPage>> _data = new Dictionary<string, List<WebPage>>();
+        private readonly IManageHeadlessBrowser _manageHeadlessBrowser;
 
-        public HeadlessBrowserService()
+        public HeadlessBrowserService(IManageHeadlessBrowser manageHeadlessBrowser)
         {
             _data.Add("http://www.url1.com", new List<WebPage> {
                 new WebPage { Url = "http://www.url21.com" },
@@ -33,41 +35,32 @@ namespace ZeroBrowser.Crawler.Puppeteer
             _data.Add("http://www.url32.com", new List<WebPage> {
                 new WebPage { Url = "http://www.url43.com" },
                 new WebPage { Url = "http://www.url44.com" } });
+
+            _manageHeadlessBrowser = manageHeadlessBrowser;
         }
 
-        public async Task<IEnumerable<WebPage>> GetUrls(string url)
+        public async Task<IEnumerable<WebPage>> GetUrls(string url, int jobIndex)
         {
-            return _data.ContainsKey(url) ? _data[url] : new List<WebPage>();
-        }
+            var page = await _manageHeadlessBrowser.GetPage<PuppeteerSharp.Page>(jobIndex);
 
-        //TODO: delete
-        public async Task<WebPage> GetWebPage(string seedUrl, string headlessBrowserUrl)
-        {
-            var options = new ConnectOptions()
+            var jquerySelector = "$(a[href])";
+
+            var element = await page.EvaluateFunctionAsync(@"(jquerySelector) => {
+                    const $ = window.$;
+                    var links = eval(jquerySelector).toArray();                    
+                    return JSON.stringify(links);
+                }", jquerySelector);
+
+
+            var json = element.ToString();
+
+            if (!string.IsNullOrEmpty(json))
             {
-                BrowserWSEndpoint = headlessBrowserUrl,
-            };
+                var results = JsonConvert.DeserializeObject<string[]>(json);
 
-            using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
-            {
-                using (var page = await browser.NewPageAsync())
-                {
-                    //var cdpSessopm = await page.Target.CreateCDPSessionAsync();
-                    //cdpSessopm.MessageReceived += (o, m) =>
-                    //{
-
-                    //};
-
-                    var response = await page.GoToAsync(seedUrl);
-                    var rurl = page.Url;
-                    //var html = page.
-
-                    await page.ScreenshotAsync("capture.jpg");
-                    await page.CloseAsync();
-                }
             }
 
-            return new WebPage();
+            return _data.ContainsKey(url) ? _data[url] : new List<WebPage>();
         }
 
     }

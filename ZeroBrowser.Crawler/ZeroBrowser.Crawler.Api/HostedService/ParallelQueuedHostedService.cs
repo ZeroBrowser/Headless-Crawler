@@ -13,22 +13,32 @@ namespace ZeroBrowser.Crawler.Api.HostedService
     public class ParallelQueuedHostedService : IHostedService
     {
         private readonly ILogger _logger;
-
-        private readonly Task[] _executors;
-        private readonly int _executorsCount = 2; //--default value: 2
+        private int _maxNumOfParallelOperations = 10;
+        private int _executorsCount = 2;
+        private readonly Task[] _executors;        
         private CancellationTokenSource _tokenSource;
         public IBackgroundTaskQueue TaskQueue { get; }
+        private IConfiguration _configuration;
 
         public ParallelQueuedHostedService(IBackgroundTaskQueue taskQueue, ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             TaskQueue = taskQueue;
             _logger = loggerFactory.CreateLogger<QueuedHostedService>();
+            _configuration = configuration;
 
-            if (ushort.TryParse(configuration["App:MaxNumOfParallelOperations"], out var ct))
-            {
-                _executorsCount = ct;
-            }
+            initFromConfiguration();
+
             _executors = new Task[_executorsCount];
+        }
+
+        private void initFromConfiguration()
+        {
+            if (ushort.TryParse(_configuration["App:MaxNumOfParallelOperations"], out var maxValue))
+                _maxNumOfParallelOperations = maxValue;
+
+            //lets cap it to _maxNumOfParallelOperations
+            if (ushort.TryParse(_configuration["App:NumOfParallelOperations"], out var value))
+                _executorsCount = value > _maxNumOfParallelOperations ? _maxNumOfParallelOperations : value;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -45,16 +55,16 @@ namespace ZeroBrowser.Crawler.Api.HostedService
                         while (!cancellationToken.IsCancellationRequested)
                         {
 #if DEBUG
-                        _logger.LogInformation("Waiting background task...");
+                            _logger.LogInformation("Waiting background task...");
 #endif
-                        var workItem = await TaskQueue.DequeueAsync(cancellationToken);
+                            var workItem = await TaskQueue.DequeueAsync(cancellationToken);
 
                             try
                             {
 #if DEBUG
-                            _logger.LogInformation("Got background task, executing...");
+                                _logger.LogInformation("Got background task, executing...");
 #endif
-                            await workItem(cancellationToken);
+                                await workItem(cancellationToken);
                             }
                             catch (Exception ex)
                             {
