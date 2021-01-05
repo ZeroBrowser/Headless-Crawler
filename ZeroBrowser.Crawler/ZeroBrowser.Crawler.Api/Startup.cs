@@ -51,7 +51,8 @@ namespace ZeroBrowser.Crawler.Api
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.Configure<CrawlerOptions>(Configuration.GetSection(CrawlerOptions.Section));
 
-            services.AddHostedService<ParallelQueuedHostedService>();
+            //services.AddHostedService<ParallelQueuedHostedService>();
+            services.AddHostedService<QueuedHostedService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

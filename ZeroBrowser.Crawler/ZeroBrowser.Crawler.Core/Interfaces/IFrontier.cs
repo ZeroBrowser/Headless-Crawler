@@ -8,6 +8,6 @@ namespace ZeroBrowser.Crawler.Core.Interfaces
 {
     public interface IFrontier
     {
-        Task<IEnumerable<string>> Process(IEnumerable<WebPage> webPages);
+        Task<IEnumerable<string>> Process(string parentUrl, IEnumerable<WebPage> webPages);
     }
 }

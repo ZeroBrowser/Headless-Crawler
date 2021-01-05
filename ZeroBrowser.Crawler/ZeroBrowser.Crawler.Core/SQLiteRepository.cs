@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,9 +20,21 @@ namespace ZeroBrowser.Crawler.Core
             _crawlerContext = crawlerContext;
         }
 
-        public async Task AddPages(List<string> pagesToCrawl)
+        public async Task AddPages(string parentUrl, List<string> pagesToCrawl)
         {
-            await _crawlerContext.CrawledRecords.AddRangeAsync(pagesToCrawl.Select(createCrawledRecord));
+            var parent = !string.IsNullOrEmpty(parentUrl) ? await GetCrawledRecord<CrawledRecord>(cr => cr.HashedUrl == parentUrl.CreateMD5()) : null;
+
+            var crawledRecords = pagesToCrawl.Select(p => createCrawledRecord(p));
+            await _crawlerContext.CrawledRecords.AddRangeAsync(crawledRecords);
+
+            if (parent != null)
+            {
+                foreach (var record in crawledRecords)
+                {
+                    await _crawlerContext.CrawledRecordRelations.AddAsync(new CrawledRecordRelation { Parent = parent, ParentId = parent.Id, Child = record, ChildId = record.Id });
+                }
+            }
+
             await _crawlerContext.SaveChangesAsync();
         }
 
@@ -45,7 +58,8 @@ namespace ZeroBrowser.Crawler.Core
             await _crawlerContext.SaveChangesAsync();
         }
 
-        private async Task<CrawledRecord> getCrawledRecord(string url)
+
+        public async Task<CrawledRecord> getCrawledRecord(string url)
         {
             var hashedUrl = url.CreateMD5();
 
@@ -54,11 +68,18 @@ namespace ZeroBrowser.Crawler.Core
             return record;
         }
 
+        public async Task<T> GetCrawledRecord<T>(Expression<Func<T, bool>> source) where T : class
+        {
+            var record = await _crawlerContext.Set<T>().FirstOrDefaultAsync(source);
+
+            return record;
+        }
+
         private CrawledRecord createCrawledRecord(string url)
         {
             url = url.ToLower();
 
-            return new CrawledRecord
+            var crawledRecord = new CrawledRecord
             {
                 Url = url,
                 CrawlStatus = CrawlStatus.Pending,
@@ -68,6 +89,8 @@ namespace ZeroBrowser.Crawler.Core
                 Inserted = DateTime.UtcNow,
                 Updated = DateTime.UtcNow
             };
+
+            return crawledRecord;
         }
     }
 }

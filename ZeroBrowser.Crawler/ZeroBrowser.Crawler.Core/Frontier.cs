@@ -17,7 +17,7 @@ namespace ZeroBrowser.Crawler.Core
             _repository = repository;
         }
 
-        public async Task<IEnumerable<string>> Process(IEnumerable<WebPage> webPages)
+        public async Task<IEnumerable<string>> Process(string parentUrl, IEnumerable<WebPage> webPages)
         {
             var pagesToCrawl = new List<string>();            
 
@@ -32,7 +32,7 @@ namespace ZeroBrowser.Crawler.Core
 
             //save in DB with pending status
             if (pagesToCrawl.Count > 0)
-                await _repository.AddPages(pagesToCrawl);
+                await _repository.AddPages(parentUrl, pagesToCrawl);
 
             return pagesToCrawl;
         }

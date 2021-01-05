@@ -21,6 +21,8 @@ namespace ZeroBrowser.Crawler.Core
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
         private static int jobIndex = 0;
         private static int totalPagesCrawled = 0;
+        private static string rootDomainName = string.Empty;
+
         private readonly CrawlerOptions _crawlerOptions;
         private readonly IRepository _repository;
 
@@ -42,16 +44,27 @@ namespace ZeroBrowser.Crawler.Core
 
         public async Task Crawl(string url)
         {
+            //very first time
+            if (rootDomainName == string.Empty)
+            {
+                rootDomainName = new Uri(url).Host.Replace("www.", string.Empty);
+                await _repository.AddPages(null, new List<string> { url });
+            }
+
             _logger.LogInformation($"Url : {url}");
 
-            //1. lets get page information.
+            //1. lets get the page information
             var urls = await _headlessBrowserService.GetUrls(url, jobIndex);
 
-            //2. list of pages to crawl
-            var newUrls = await _frontier.Process(urls);
+            //2. list of all pages to crawl
+            var newUrls = await _frontier.Process(url, urls);
 
             foreach (var newUrl in newUrls)
             {
+                //lets not crawl if the site is outside seed url (main site)
+                if (!newUrl.Contains(rootDomainName))
+                    continue;
+
                 //do health check and save in DB using Repository
                 var httpStatusCode = await _headlessBrowserService.HealthCheck(url, jobIndex);
                 await _repository.UpdateHttpStatusCode(url, httpStatusCode);

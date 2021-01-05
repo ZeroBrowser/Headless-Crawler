@@ -9,7 +9,7 @@ using ZeroBrowser.Crawler.Core;
 namespace ZeroBrowser.Crawler.Core.Migrations
 {
     [DbContext(typeof(CrawlerContext))]
-    [Migration("20210105174026_InitialCreate")]
+    [Migration("20210105210100_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,47 @@ namespace ZeroBrowser.Crawler.Core.Migrations
                     b.HasIndex("HashedUrl");
 
                     b.ToTable("CrawledRecords");
+                });
+
+            modelBuilder.Entity("ZeroBrowser.Crawler.Core.CrawlerContext+CrawledRecordRelation", b =>
+                {
+                    b.Property<Guid>("ParentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ChildId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ParentId", "ChildId");
+
+                    b.HasIndex("ChildId");
+
+                    b.ToTable("CrawledRecordRelations");
+                });
+
+            modelBuilder.Entity("ZeroBrowser.Crawler.Core.CrawlerContext+CrawledRecordRelation", b =>
+                {
+                    b.HasOne("ZeroBrowser.Crawler.Core.CrawlerContext+CrawledRecord", "Child")
+                        .WithMany("ParentCrawledRecord")
+                        .HasForeignKey("ChildId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ZeroBrowser.Crawler.Core.CrawlerContext+CrawledRecord", "Parent")
+                        .WithMany("CrawledRecords")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Child");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("ZeroBrowser.Crawler.Core.CrawlerContext+CrawledRecord", b =>
+                {
+                    b.Navigation("CrawledRecords");
+
+                    b.Navigation("ParentCrawledRecord");
                 });
 #pragma warning restore 612, 618
         }
