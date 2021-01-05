@@ -14,8 +14,7 @@ namespace ZeroBrowser.Crawler.Core
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<CrawledRecord>().HasIndex(b => b.Id);
+        {            
             modelBuilder.Entity<CrawledRecord>().HasIndex(b => b.HashedUrl);
         }
 

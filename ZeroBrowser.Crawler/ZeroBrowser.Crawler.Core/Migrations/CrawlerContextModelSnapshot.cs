@@ -47,8 +47,6 @@ namespace ZeroBrowser.Crawler.Core.Migrations
 
                     b.HasIndex("HashedUrl");
 
-                    b.HasIndex("Id");
-
                     b.ToTable("CrawledRecords");
                 });
 #pragma warning restore 612, 618

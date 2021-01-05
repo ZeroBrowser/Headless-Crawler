@@ -44,7 +44,9 @@ namespace ZeroBrowser.Crawler.Puppeteer
             if (!string.IsNullOrEmpty(json))
             {
                 var results = JsonConvert.DeserializeObject<string[]>(json);
-                return results.ToList().Select(l => new WebPage { Url = l });
+
+                //lets remove duplicates
+                return results.Distinct<string>().Select(l => new WebPage { Url = l });                
             }
 
             return new List<WebPage>();

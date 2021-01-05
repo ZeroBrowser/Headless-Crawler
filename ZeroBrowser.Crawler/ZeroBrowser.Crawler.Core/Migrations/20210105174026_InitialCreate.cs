@@ -29,11 +29,6 @@ namespace ZeroBrowser.Crawler.Core.Migrations
                 name: "IX_CrawledRecords_HashedUrl",
                 table: "CrawledRecords",
                 column: "HashedUrl");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CrawledRecords_Id",
-                table: "CrawledRecords",
-                column: "Id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

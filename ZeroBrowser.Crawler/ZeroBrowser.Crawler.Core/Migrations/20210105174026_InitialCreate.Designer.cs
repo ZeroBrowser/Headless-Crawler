@@ -9,7 +9,7 @@ using ZeroBrowser.Crawler.Core;
 namespace ZeroBrowser.Crawler.Core.Migrations
 {
     [DbContext(typeof(CrawlerContext))]
-    [Migration("20210105070447_InitialCreate")]
+    [Migration("20210105174026_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,8 +48,6 @@ namespace ZeroBrowser.Crawler.Core.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("HashedUrl");
-
-                    b.HasIndex("Id");
 
                     b.ToTable("CrawledRecords");
                 });
