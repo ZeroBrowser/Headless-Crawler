@@ -18,6 +18,9 @@ namespace ZeroBrowser.Crawler.Common.CustomValidations
         {
             var membersName = new[] { validationContext.MemberName };
 
+            if (value == null)
+                return new ValidationResult("Null", membersName);
+
             if (value.GetType().IsArray)
             {
                 var urls = value as string[];

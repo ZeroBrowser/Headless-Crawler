@@ -26,5 +26,7 @@ namespace ZeroBrowser.Crawler.Common.Models
         public ushort MaxNumberOfParallelInstances { get; set; }
 
         public string JQueryUrl { get; set; }
+
+        public ushort MaxNumOfPagesToCrawl { get; set; }
     }
 }

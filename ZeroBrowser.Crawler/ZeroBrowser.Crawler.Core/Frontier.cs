@@ -29,7 +29,11 @@ namespace ZeroBrowser.Crawler.Core
                     pagesToCrawl.Add(webPage.Url);
                 }
             }
-            
+
+            //save in DB with pending status
+            if (pagesToCrawl.Count > 0)
+                await _repository.AddPages(pagesToCrawl);
+
             return pagesToCrawl;
         }
     }

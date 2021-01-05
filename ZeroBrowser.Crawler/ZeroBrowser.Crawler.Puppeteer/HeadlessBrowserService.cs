@@ -2,6 +2,7 @@
 using PuppeteerSharp;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
@@ -15,7 +16,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
 
         public HeadlessBrowserService(IManageHeadlessBrowser manageHeadlessBrowser)
         {
-            _data.Add("http://www.url1.com", new List<WebPage> {
+            _data.Add("https://www.0browser.com", new List<WebPage> {
                 new WebPage { Url = "http://www.url21.com" },
                 new WebPage { Url = "http://www.url22.com" } });
 
@@ -41,7 +42,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
 
         public async Task<IEnumerable<WebPage>> GetUrls(string url, int jobIndex)
         {
-            var page = await _manageHeadlessBrowser.GetPage<PuppeteerSharp.Page>(jobIndex);
+            var page = await gotoUrl(url, jobIndex);
 
             var jquerySelector = "$(a[href])";
 
@@ -61,6 +62,23 @@ namespace ZeroBrowser.Crawler.Puppeteer
             }
 
             return _data.ContainsKey(url) ? _data[url] : new List<WebPage>();
+        }
+
+        public async Task<HttpStatusCode> HealthCheck(string url, int jobIndex)
+        {
+            var page = await _manageHeadlessBrowser.GetPage<Page>(jobIndex);
+
+            var response = await page.GoToAsync(url);
+
+            return response.Status;
+        }
+
+        private async Task<Page> gotoUrl(string url, int jobIndex)
+        {
+            var page = await _manageHeadlessBrowser.GetPage<Page>(jobIndex);
+            await page.GoToAsync(url);
+            await page.WaitForSelectorAsync("body");
+            return page;
         }
 
     }

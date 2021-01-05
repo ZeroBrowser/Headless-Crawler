@@ -13,7 +13,7 @@ namespace ZeroBrowser.Crawler.Core
 
         }
 
-        public DbSet<CrawledData> CrawlerStates { get; set; }
+        public DbSet<CrawledRecord> CrawledRecords { get; set; }
 
         public enum CrawlStatus
         {
@@ -30,7 +30,7 @@ namespace ZeroBrowser.Crawler.Core
         }
 
 
-        public class CrawledData
+        public class CrawledRecord
         {
             public Guid Id { get; set; }
 
@@ -42,7 +42,7 @@ namespace ZeroBrowser.Crawler.Core
 
             public HealthStatus HealthStatus { get; set; }
 
-            public HttpStatusCode HttpStatusCode { get; set; }
+            public HttpStatusCode? HttpStatusCode { get; set; }
 
             public DateTime Inserted { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,34 +20,25 @@ namespace ZeroBrowser.Crawler.Core
         private readonly IFrontier _frontier;
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
         private static int jobIndex = 0;
-        //private static string 
-
-        private int _maxNumOfParallelOperations = 10;
-        private int _executorsCount = 2;
-        private readonly IConfiguration _configuration;
+        private static int totalPagesCrawled = 0;
+        private readonly CrawlerOptions _crawlerOptions;
+        private readonly IRepository _repository;
 
         public Crawler(ILogger<Crawler> logger,
                        IHeadlessBrowserService headlessBrowserService,
                        IFrontier frontier,
                        IBackgroundTaskQueue backgroundTaskQueue,
-                       IConfiguration configuration)
+                       IOptions<CrawlerOptions> crawlerOptions,
+                       IRepository repository)
         {
             _logger = logger;
-            _headlessBrowserService = headlessBrowserService;            
+            _headlessBrowserService = headlessBrowserService;
             _frontier = frontier;
             _backgroundTaskQueue = backgroundTaskQueue;
-            _configuration = configuration;
+            _crawlerOptions = crawlerOptions.Value;
+            _repository = repository;
         }
 
-        private void initFromConfiguration()
-        {
-            if (ushort.TryParse(_configuration["App:MaxNumOfParallelOperations"], out var maxValue))
-                _maxNumOfParallelOperations = maxValue;
-
-            //lets cap it to _maxNumOfParallelOperations
-            if (ushort.TryParse(_configuration["App:NumOfParallelOperations"], out var value))
-                _executorsCount = value > _maxNumOfParallelOperations ? _maxNumOfParallelOperations : value;
-        }
 
         public async Task Crawl(string url)
         {
@@ -58,21 +50,30 @@ namespace ZeroBrowser.Crawler.Core
             //2. list of pages to crawl
             var newUrls = await _frontier.Process(urls);
 
-            //TODO: enforce limit
             foreach (var newUrl in newUrls)
-                //TODO: do health check and save in DB using Repository
+            {
+                //do health check and save in DB using Repository
+                var httpStatusCode = await _headlessBrowserService.HealthCheck(url, jobIndex);
+                await _repository.UpdateHttpStatusCode(url, httpStatusCode);
+
+                //Enforce limit
+                if (_crawlerOptions.MaxNumOfPagesToCrawl == Volatile.Read(ref totalPagesCrawled))
+                    break;
 
                 _backgroundTaskQueue.QueueBackgroundWorkItem(async token =>
                 {
                     Interlocked.Increment(ref jobIndex);
+                    Interlocked.Increment(ref totalPagesCrawled);
+
                     await Crawl(newUrl.ToString());
 
                     //lets reset to 0
-                    if (Volatile.Read(ref jobIndex) == _executorsCount)
+                    if (Volatile.Read(ref jobIndex) == _crawlerOptions.NumberOfParallelInstances)
                     {
                         Volatile.Write(ref jobIndex, 0);
                     }
                 });
+            }
         }
     }
 }
