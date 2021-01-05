@@ -2,6 +2,7 @@
 using PuppeteerSharp;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
@@ -44,12 +45,18 @@ namespace ZeroBrowser.Crawler.Puppeteer
         {
             var page = await gotoUrl(url, jobIndex);
 
-            var jquerySelector = "$(a[href])";
+            var jquerySelector = "$('a[href]')";
 
             var element = await page.EvaluateFunctionAsync(@"(jquerySelector) => {
                     const $ = window.$;
-                    var links = eval(jquerySelector).toArray();                    
-                    return JSON.stringify(links);
+                    var links = eval(jquerySelector).toArray();
+
+                    var urls = [];
+                    $(links).each(function() {
+                       urls.push( this.href ); 
+                    });
+
+                    return JSON.stringify(urls);
                 }", jquerySelector);
 
 
@@ -58,10 +65,10 @@ namespace ZeroBrowser.Crawler.Puppeteer
             if (!string.IsNullOrEmpty(json))
             {
                 var results = JsonConvert.DeserializeObject<string[]>(json);
-
+                return results.ToList().Select(l => new WebPage { Url = l });
             }
 
-            return _data.ContainsKey(url) ? _data[url] : new List<WebPage>();
+            return new List<WebPage>();
         }
 
         public async Task<HttpStatusCode> HealthCheck(string url, int jobIndex)

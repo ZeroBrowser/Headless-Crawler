@@ -26,17 +26,21 @@ namespace ZeroBrowser.Crawler.Core
         }
 
         public async Task<bool> Exist(string url)
-        {            
+        {
             var record = await getCrawledRecord(url);
 
-            return false;
+            return record != null;
         }
 
         public async Task UpdateHttpStatusCode(string url, HttpStatusCode statusCode)
         {
             var record = await getCrawledRecord(url);
 
+            if (record == null)
+                return;
+
             record.HttpStatusCode = statusCode;
+            record.Updated = DateTime.UtcNow;
 
             await _crawlerContext.SaveChangesAsync();
         }

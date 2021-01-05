@@ -46,7 +46,7 @@ namespace ZeroBrowser.Crawler.Api
             services.AddScoped<IHeadlessBrowserService, HeadlessBrowserService>();
             services.AddScoped<IFrontier, Frontier>();
             services.AddScoped<IRepository, SQLiteRepository>();
-            services.AddScoped<IManageHeadlessBrowser, ManageHeadlessBrowser>();
+            services.AddSingleton<IManageHeadlessBrowser, ManageHeadlessBrowser>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.Configure<CrawlerOptions>(Configuration.GetSection(CrawlerOptions.Section));
 

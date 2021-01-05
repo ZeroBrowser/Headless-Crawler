@@ -31,7 +31,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
                 //lets create pages
                 for (int index = 0; index < _crawlerOptions.NumberOfParallelInstances; index++)
                 {
-                    await GetPage<PuppeteerSharp.Page>(index);
+                    await GetPage<Page>(index);
                 }
         }
 
@@ -42,6 +42,10 @@ namespace ZeroBrowser.Crawler.Puppeteer
         /// <returns>Puppeteer Page object</returns>
         public async Task<T> GetPage<T>(int index) where T : class
         {
+            if (_browser == null)
+                await Init();
+
+
             BrowserLookup.TryGetValue(index, out Page page);
             if (page == null)
             {
