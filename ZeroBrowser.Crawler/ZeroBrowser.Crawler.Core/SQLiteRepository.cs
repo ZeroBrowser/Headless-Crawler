@@ -24,12 +24,16 @@ namespace ZeroBrowser.Crawler.Core
         {
             var parent = !string.IsNullOrEmpty(parentUrl) ? await GetCrawledRecord<CrawledRecord>(cr => cr.HashedUrl == parentUrl.CreateMD5()) : null;
 
-            var crawledRecords = pagesToCrawl.Select(p => createCrawledRecord(p));            
-
+            var crawledRecords = pagesToCrawl.Select(p => createCrawledRecord(p));
+            
             if (parent != null)
             {
                 foreach (var record in crawledRecords)
                 {
+                    //add the record itself
+                    await _crawlerContext.CrawledRecords.AddAsync(record);
+
+                    //add relationship
                     await _crawlerContext.CrawledRecordRelations.AddAsync(new CrawledRecordRelation { Parent = parent, ParentId = parent.Id, Child = record, ChildId = record.Id });
                 }
             }
