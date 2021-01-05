@@ -12,32 +12,10 @@ namespace ZeroBrowser.Crawler.Puppeteer
 {
     public class HeadlessBrowserService : IHeadlessBrowserService
     {
-        private Dictionary<string, List<WebPage>> _data = new Dictionary<string, List<WebPage>>();
         private readonly IManageHeadlessBrowser _manageHeadlessBrowser;
 
         public HeadlessBrowserService(IManageHeadlessBrowser manageHeadlessBrowser)
-        {
-            _data.Add("https://www.0browser.com", new List<WebPage> {
-                new WebPage { Url = "http://www.url21.com" },
-                new WebPage { Url = "http://www.url22.com" } });
-
-            _data.Add("http://www.url21.com", new List<WebPage> {
-                new WebPage { Url = "http://www.url31.com" },
-                new WebPage { Url = "http://www.url32.com" } });
-
-            _data.Add("http://www.url22.com", new List<WebPage> {
-                new WebPage { Url = "http://www.url33.com" },
-                new WebPage { Url = "http://www.url34.com" } });
-
-
-            _data.Add("http://www.url31.com", new List<WebPage> {
-                new WebPage { Url = "http://www.url41.com" },
-                new WebPage { Url = "http://www.url42.com" } });
-
-            _data.Add("http://www.url32.com", new List<WebPage> {
-                new WebPage { Url = "http://www.url43.com" },
-                new WebPage { Url = "http://www.url44.com" } });
-
+        {           
             _manageHeadlessBrowser = manageHeadlessBrowser;
         }
 
@@ -59,6 +37,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
                     return JSON.stringify(urls);
                 }", jquerySelector);
 
+            await _manageHeadlessBrowser.ClosePage(jobIndex);
 
             var json = element.ToString();
 
@@ -76,6 +55,8 @@ namespace ZeroBrowser.Crawler.Puppeteer
             var page = await _manageHeadlessBrowser.GetPage<Page>(jobIndex);
 
             var response = await page.GoToAsync(url);
+
+            await _manageHeadlessBrowser.ClosePage(jobIndex);
 
             return response.Status;
         }

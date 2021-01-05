@@ -9,5 +9,7 @@ namespace ZeroBrowser.Crawler.Common.Interfaces
     {
         Task Init();
         Task<T> GetPage<T>(int index) where T : class;
+
+        Task ClosePage(int index);
     }
 }

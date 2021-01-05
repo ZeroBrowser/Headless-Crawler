@@ -59,5 +59,14 @@ namespace ZeroBrowser.Crawler.Puppeteer
             }
             return page as T;
         }
+
+        public async Task ClosePage(int index)
+        {
+            BrowserLookup.TryGetValue(index, out Page page);
+            if (page == null)
+            {
+                await page.CloseAsync();
+            }
+        }
     }
 }

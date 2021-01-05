@@ -60,6 +60,8 @@ namespace ZeroBrowser.Crawler.Core
                 if (_crawlerOptions.MaxNumOfPagesToCrawl == Volatile.Read(ref totalPagesCrawled))
                     break;
 
+                Task.Delay(1000).Wait();
+
                 _backgroundTaskQueue.QueueBackgroundWorkItem(async token =>
                 {
                     Interlocked.Increment(ref jobIndex);
