@@ -1,0 +1,13 @@
+﻿{
+	"seedUrls" : ["https://www.0browser.com"],
+	"headlessBrowserUrl" : "wss://proxy.0browser.com?token={token}"
+}
+
+
+Entity Framework related commands:
+dotnet ef migrations add InitialCreate --startup-project ..\ZeroBrowser.Crawler.Api\ZeroBrowser.Crawler.Api.csproj
+dotnet ef migrations remove --startup-project ..\ZeroBrowser.Crawler.Api\ZeroBrowser.Crawler.Api.csproj
+dotnet ef database update --startup-project ..\ZeroBrowser.Crawler.Api\ZeroBrowser.Crawler.Api.csproj
+
+
+docker cp {docker_id}:/app/crawler.db myLocalFilename.db  
