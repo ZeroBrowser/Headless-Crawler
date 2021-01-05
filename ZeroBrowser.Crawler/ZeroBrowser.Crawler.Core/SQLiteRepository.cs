@@ -24,8 +24,7 @@ namespace ZeroBrowser.Crawler.Core
         {
             var parent = !string.IsNullOrEmpty(parentUrl) ? await GetCrawledRecord<CrawledRecord>(cr => cr.HashedUrl == parentUrl.CreateMD5()) : null;
 
-            var crawledRecords = pagesToCrawl.Select(p => createCrawledRecord(p));
-            await _crawlerContext.CrawledRecords.AddRangeAsync(crawledRecords);
+            var crawledRecords = pagesToCrawl.Select(p => createCrawledRecord(p));            
 
             if (parent != null)
             {
