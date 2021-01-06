@@ -27,6 +27,6 @@ namespace ZeroBrowser.Crawler.Common.Models
 
         public string JQueryUrl { get; set; }
 
-        public ushort MaxNumOfPagesToCrawl { get; set; }
+        public ushort MaxNumOfPagesAllowedToBeCrawled { get; set; }
     }
 }

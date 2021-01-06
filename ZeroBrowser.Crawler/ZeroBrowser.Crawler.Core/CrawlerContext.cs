@@ -22,7 +22,7 @@ namespace ZeroBrowser.Crawler.Core
         {
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite("Data Source=crawler.db");
+        protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite("Data Source=crawler.db;");
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

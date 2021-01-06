@@ -21,7 +21,7 @@ namespace ZeroBrowser.Crawler.Core
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
         private static int jobIndex = 0;
         private static int totalPagesCrawled = 0;
-        private static string rootDomainName = string.Empty;
+        private static string seedHostName = string.Empty;
 
         private readonly CrawlerOptions _crawlerOptions;
         private readonly IRepository _repository;
@@ -44,10 +44,10 @@ namespace ZeroBrowser.Crawler.Core
 
         public async Task Crawl(string url)
         {
-            //very first time
-            if (rootDomainName == string.Empty)
+            //very first time lets populate the seed host name and cache it (static)
+            if (seedHostName == string.Empty)
             {
-                rootDomainName = new Uri(url).Host.Replace("www.", string.Empty);
+                seedHostName = new Uri(url).Host.Replace("www.", string.Empty);
                 await _repository.AddPages(null, new List<string> { url });
             }
 
@@ -62,32 +62,42 @@ namespace ZeroBrowser.Crawler.Core
             foreach (var newUrl in newUrls)
             {
                 //lets not crawl if the site is outside seed url (main site)
-                if (!newUrl.Contains(rootDomainName))
+                if (!newUrl.Contains(seedHostName))
                     continue;
 
                 //do health check and save in DB using Repository
                 var httpStatusCode = await _headlessBrowserService.HealthCheck(url, jobIndex);
                 await _repository.UpdateHttpStatusCode(url, httpStatusCode);
 
-                //Enforce limit
-                if (_crawlerOptions.MaxNumOfPagesToCrawl == Volatile.Read(ref totalPagesCrawled))
+                //if total pages crawled reaches max number of pages allowed Enforce limit
+                if (_crawlerOptions.MaxNumOfPagesAllowedToBeCrawled == Volatile.Read(ref totalPagesCrawled))
                     break;
 
                 Task.Delay(1000).Wait();
 
+                incrementCounter();
+
                 _backgroundTaskQueue.QueueBackgroundWorkItem(async token =>
                 {
-                    Interlocked.Increment(ref jobIndex);
-                    Interlocked.Increment(ref totalPagesCrawled);
-
                     await Crawl(newUrl.ToString());
-
-                    //lets reset to 0
-                    if (Volatile.Read(ref jobIndex) == _crawlerOptions.NumberOfParallelInstances)
-                    {
-                        Volatile.Write(ref jobIndex, 0);
-                    }
                 });
+
+                resetCounter();
+            }
+        }
+
+        private void incrementCounter()
+        {
+            Interlocked.Increment(ref jobIndex);
+            Interlocked.Increment(ref totalPagesCrawled);
+        }
+
+        private void resetCounter()
+        {
+            //lets reset to 0
+            if (Volatile.Read(ref jobIndex) == _crawlerOptions.NumberOfParallelInstances)
+            {
+                Volatile.Write(ref jobIndex, 0);
             }
         }
     }

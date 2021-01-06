@@ -66,6 +66,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
             if (page == null)
             {
                 await page.CloseAsync();
+                BrowserLookup.TryUpdate(index, null, page);
             }
         }
     }
