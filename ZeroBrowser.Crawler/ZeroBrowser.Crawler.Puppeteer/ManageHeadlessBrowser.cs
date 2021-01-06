@@ -42,7 +42,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
         /// <returns>Puppeteer Page object</returns>
         public async Task<T> GetPage<T>(int index) where T : class
         {
-            if (_browser == null)
+            if (_browser == null || _browser.IsClosed)
                 await Init();
 
 

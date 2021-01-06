@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using static ZeroBrowser.Crawler.Core.CrawlerContext;
 
@@ -13,32 +14,39 @@ namespace ZeroBrowser.Crawler.Core
 {
     public class SQLiteRepository : IRepository
     {
-        private readonly CrawlerContext _crawlerContext;
+        //private readonly CrawlerContext _crawlerContext;
+        private ILogger<SQLiteRepository> _logger;
 
-        public SQLiteRepository(CrawlerContext crawlerContext)
+        public SQLiteRepository(ILogger<SQLiteRepository> logger)
         {
-            _crawlerContext = crawlerContext;
+            //_crawlerContext = crawlerContext;
+            _logger = logger;
         }
 
         public async Task AddPages(string parentUrl, List<string> pagesToCrawl)
         {
-            var parent = !string.IsNullOrEmpty(parentUrl) ? await GetCrawledRecord<CrawledRecord>(cr => cr.HashedUrl == parentUrl.CreateMD5()) : null;
-
-            var crawledRecords = pagesToCrawl.Select(p => createCrawledRecord(p));
-            
-            if (parent != null)
+            using (var _crawlerContext = new CrawlerContext())
             {
-                foreach (var record in crawledRecords)
+                _logger.LogInformation($"CrawlerContext HashCode : {_crawlerContext.GetHashCode()}");
+
+                var parent = !string.IsNullOrEmpty(parentUrl) ? await GetCrawledRecord<CrawledRecord>(cr => cr.HashedUrl == parentUrl.CreateMD5()) : null;
+
+                var crawledRecords = pagesToCrawl.Select(p => createCrawledRecord(p));
+
+                if (parent != null)
                 {
-                    //add the record itself
-                    await _crawlerContext.CrawledRecords.AddAsync(record);
+                    foreach (var record in crawledRecords)
+                    {
+                        //add the record itself
+                        await _crawlerContext.CrawledRecords.AddAsync(record);
 
-                    //add relationship
-                    await _crawlerContext.CrawledRecordRelations.AddAsync(new CrawledRecordRelation { Parent = parent, ParentId = parent.Id, Child = record, ChildId = record.Id });
+                        //add relationship
+                        await _crawlerContext.CrawledRecordRelations.AddAsync(new CrawledRecordRelation { Parent = parent, ParentId = parent.Id, Child = record, ChildId = record.Id });
+                    }
                 }
-            }
 
-            await _crawlerContext.SaveChangesAsync();
+                await _crawlerContext.SaveChangesAsync();
+            }
         }
 
         public async Task<bool> Exist(string url)
@@ -58,7 +66,10 @@ namespace ZeroBrowser.Crawler.Core
             record.HttpStatusCode = statusCode;
             record.Updated = DateTime.UtcNow;
 
-            await _crawlerContext.SaveChangesAsync();
+            using (var _crawlerContext = new CrawlerContext())
+            {
+                await _crawlerContext.SaveChangesAsync();
+            }
         }
 
 
@@ -66,16 +77,22 @@ namespace ZeroBrowser.Crawler.Core
         {
             var hashedUrl = url.CreateMD5();
 
-            var record = await _crawlerContext.CrawledRecords.FirstOrDefaultAsync(a => a.HashedUrl == hashedUrl);
+            using (var _crawlerContext = new CrawlerContext())
+            {
+                var record = await _crawlerContext.CrawledRecords.FirstOrDefaultAsync(a => a.HashedUrl == hashedUrl);
 
-            return record;
+                return record;
+            }
         }
 
         public async Task<T> GetCrawledRecord<T>(Expression<Func<T, bool>> source) where T : class
         {
-            var record = await _crawlerContext.Set<T>().FirstOrDefaultAsync(source);
+            using (var _crawlerContext = new CrawlerContext())
+            {
+                var record = await _crawlerContext.Set<T>().FirstOrDefaultAsync(source);
 
-            return record;
+                return record;
+            }
         }
 
         private CrawledRecord createCrawledRecord(string url)

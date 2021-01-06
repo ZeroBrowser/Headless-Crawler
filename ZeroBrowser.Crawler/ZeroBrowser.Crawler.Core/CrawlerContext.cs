@@ -7,10 +7,22 @@ namespace ZeroBrowser.Crawler.Core
 {
     public class CrawlerContext : DbContext
     {
+        public CrawlerContext()
+        {
+
+        }
+
         public CrawlerContext(DbContextOptions<CrawlerContext> options) : base(options)
         {
 
         }
+
+
+        protected CrawlerContext(DbContextOptions contextOptions) : base(contextOptions)
+        {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite("Data Source=crawler.db");
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

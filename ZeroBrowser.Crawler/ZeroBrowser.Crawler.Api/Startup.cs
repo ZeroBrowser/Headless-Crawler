@@ -39,14 +39,15 @@ namespace ZeroBrowser.Crawler.Api
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.            
-            services.AddDbContextPool<CrawlerContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContextPool<CrawlerContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContext<CrawlerContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient, ServiceLifetime.Transient);
 
-            services.AddHealthChecks().AddDbContextCheck<CrawlerContext>();
-
+            //services.AddHealthChecks().AddDbContextCheck<CrawlerContext>();
+            
             services.AddScoped<ICrawler, Core.Crawler>();
             services.AddScoped<IHeadlessBrowserService, HeadlessBrowserService>();
             services.AddScoped<IFrontier, Frontier>();
-            services.AddScoped<IRepository, SQLiteRepository>();
+            services.AddTransient<IRepository, SQLiteRepository>();
             services.AddSingleton<IManageHeadlessBrowser, ManageHeadlessBrowser>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.Configure<CrawlerOptions>(Configuration.GetSection(CrawlerOptions.Section));

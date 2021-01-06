@@ -15,7 +15,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
         private readonly IManageHeadlessBrowser _manageHeadlessBrowser;
 
         public HeadlessBrowserService(IManageHeadlessBrowser manageHeadlessBrowser)
-        {           
+        {
             _manageHeadlessBrowser = manageHeadlessBrowser;
         }
 
@@ -46,7 +46,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
                 var results = JsonConvert.DeserializeObject<string[]>(json);
 
                 //lets remove duplicates
-                return results.Distinct<string>().Select(l => new WebPage { Url = l });                
+                return results.Distinct<string>().Select(l => new WebPage { Url = l });
             }
 
             return new List<WebPage>();
@@ -60,7 +60,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
 
             await _manageHeadlessBrowser.ClosePage(jobIndex);
 
-            return response.Status;
+            return response == null ? HttpStatusCode.NotFound : response.Status;
         }
 
         private async Task<Page> gotoUrl(string url, int jobIndex)

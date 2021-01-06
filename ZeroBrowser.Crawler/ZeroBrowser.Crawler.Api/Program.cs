@@ -18,7 +18,7 @@ namespace ZeroBrowser.Crawler.Api
         {
             var host = CreateHostBuilder(args).Build();
 
-            await host.CreateDatabase<CrawlerContext>();
+            //await host.CreateDatabase<CrawlerContext>();
 
             await host.RunAsync();
         }

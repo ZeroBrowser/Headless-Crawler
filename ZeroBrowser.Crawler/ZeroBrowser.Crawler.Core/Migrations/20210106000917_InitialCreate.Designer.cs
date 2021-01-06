@@ -9,7 +9,7 @@ using ZeroBrowser.Crawler.Core;
 namespace ZeroBrowser.Crawler.Core.Migrations
 {
     [DbContext(typeof(CrawlerContext))]
-    [Migration("20210105210100_InitialCreate")]
+    [Migration("20210106000917_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
