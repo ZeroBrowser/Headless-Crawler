@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
 using ZeroBrowser.Crawler.Core.Interfaces;
+using IFrontier = ZeroBrowser.Crawler.Core.Interfaces.IFrontier;
 
 namespace ZeroBrowser.Crawler.Core
 {

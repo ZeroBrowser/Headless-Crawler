@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
 using ZeroBrowser.Crawler.Core.Interfaces;
+using IFrontier = ZeroBrowser.Crawler.Core.Interfaces.IFrontier;
 
 namespace ZeroBrowser.Crawler.Core
 {
@@ -19,7 +20,7 @@ namespace ZeroBrowser.Crawler.Core
 
         public async Task<IEnumerable<string>> Process(string parentUrl, IEnumerable<WebPage> webPages)
         {
-            var pagesToCrawl = new List<string>();            
+            var pagesToCrawl = new List<string>();
 
             foreach (var webPage in webPages)
             {
