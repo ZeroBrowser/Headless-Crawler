@@ -10,6 +10,6 @@ namespace ZeroBrowser.Crawler.Common.Interfaces
     {
         void QueueUrlItem(string url);
 
-        Task<string> DequeueAsync(CancellationToken cancellationToken);
+        Task<string> DequeueAsync();
     }
 }

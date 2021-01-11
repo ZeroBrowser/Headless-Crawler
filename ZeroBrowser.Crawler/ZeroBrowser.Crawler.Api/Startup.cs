@@ -45,23 +45,29 @@ namespace ZeroBrowser.Crawler.Api
             //services.AddDbContext<CrawlerContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient, ServiceLifetime.Transient);
 
             //services.AddHealthChecks().AddDbContextCheck<CrawlerContext>();
-            
-            services.AddScoped<ICrawler, Core.Crawler>();
-            services.AddScoped<IHeadlessBrowserService, HeadlessBrowserService>();
-            
-            services.AddTransient<IRepository, SQLiteRepository>();
-            services.AddSingleton<IManageHeadlessBrowser, ManageHeadlessBrowser>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
+            //services.AddScoped<ICrawler, Core.Crawler>();
+            services.AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>();
             services.AddSingleton<IBackgroundUrlQueue, BackgroundUrlQueue>();
+
+
+            //services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            //services.AddTransient<IRepository, SQLiteRepository>();
+
+            services.AddSingleton<IManageHeadlessBrowser, ManageHeadlessBrowser>();            
             services.AddSingleton<IUrlChannel, UrlChannel>();
+
             services.AddSingleton<IFrontier, Frontier.Frontier>();
 
             services.Configure<CrawlerOptions>(Configuration.GetSection(CrawlerOptions.Section));
 
             //services.AddHostedService<ParallelQueuedHostedService>();
-            services.AddHostedService<QueuedHostedService>();
-            services.AddHostedService<QueuedHostedService>();
-            
+            //services.AddHostedService<QueuedHostedService>();
+
+            services.AddHostedService<FrontierUrlQueuedHostedService>();
+            //services.AddHostedService<ParallelCrawlerHostedService>();
+
+
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

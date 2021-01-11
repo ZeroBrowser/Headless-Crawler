@@ -15,45 +15,43 @@ namespace ZeroBrowser.Crawler.Api.HostedService
         private readonly ILogger _logger;
         private int _maxNumOfParallelOperations = 10;
         private int _executorsCount = 2;
-        private readonly Task[] _executors;        
-        private CancellationTokenSource _tokenSource;
         private IUrlChannel _urlChannel { get; }
         private IConfiguration _configuration;
+        private readonly IHeadlessBrowserService _headlessBrowserService;
+        private readonly IBackgroundUrlQueue _backgroundUrlQueue;
 
-        public ParallelCrawlerHostedService(IUrlChannel urlChannel, ILoggerFactory loggerFactory, IConfiguration configuration)
+        public ParallelCrawlerHostedService(IUrlChannel urlChannel,
+                                            ILoggerFactory loggerFactory,
+                                            IHeadlessBrowserService headlessBrowserService,
+                                            IConfiguration configuration,
+                                            IBackgroundUrlQueue backgroundUrlQueue)
         {
             _urlChannel = urlChannel;
             _logger = loggerFactory.CreateLogger<QueuedHostedService>();
             _configuration = configuration;
-
-            initFromConfiguration();
-
-            _executors = new Task[_executorsCount];
-        }
-
-        private void initFromConfiguration()
-        {
-            if (ushort.TryParse(_configuration["App:MaxNumOfParallelOperations"], out var maxValue))
-                _maxNumOfParallelOperations = maxValue;
-
-            //lets cap it to _maxNumOfParallelOperations
-            if (ushort.TryParse(_configuration["App:NumOfParallelOperations"], out var value))
-                _executorsCount = value > _maxNumOfParallelOperations ? _maxNumOfParallelOperations : value;
+            _headlessBrowserService = headlessBrowserService;
+            _backgroundUrlQueue = backgroundUrlQueue;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Queued Hosted Service is starting.");
-
-            _tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            _logger.LogInformation($"***** entered consumer.{Environment.NewLine}");
 
             // Wait while channel is not empty and still not completed
-            await foreach (var item in _urlChannel.Read())
+            await foreach (var url in _urlChannel.Read())
             {
                 _ = Task.Factory.StartNew(async () =>
                   {
-                    //do something inside here
-                }, TaskCreationOptions.LongRunning);                
+                      var urls = await _headlessBrowserService.GetUrls(url, 0);
+
+                      foreach (var url in urls)
+                      {
+                          _logger.LogInformation($"***** new url found {url}.{Environment.NewLine}");
+                          _backgroundUrlQueue.QueueUrlItem(url.Url);
+                      }
+
+                      //do something inside here
+                  }, TaskCreationOptions.LongRunning);
             }
 
             //return Task.CompletedTask;

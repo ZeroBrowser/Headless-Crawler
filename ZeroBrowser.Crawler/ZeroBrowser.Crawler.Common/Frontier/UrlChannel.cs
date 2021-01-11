@@ -11,7 +11,7 @@ namespace ZeroBrowser.Crawler.Common.Frontier
     {
         private readonly Channel<string> _channel;
 
-        private UrlChannel()
+        public UrlChannel()
         {
             _channel = Channel.CreateUnbounded<string>();
         }

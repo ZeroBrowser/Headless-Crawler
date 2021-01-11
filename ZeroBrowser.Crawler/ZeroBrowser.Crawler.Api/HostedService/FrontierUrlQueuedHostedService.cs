@@ -25,16 +25,13 @@ namespace ZeroBrowser.Crawler.Api.HostedService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation($"Queued Hosted Service is running.{Environment.NewLine}");
+            _logger.LogInformation($"*** ExecuteAsync.{Environment.NewLine}");
 
-            await BackgroundProcessing(stoppingToken);
-        }
-
-        private async Task BackgroundProcessing(CancellationToken stoppingToken)
-        {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var url = await UrlQueue.DequeueAsync(stoppingToken);
+                var url = await UrlQueue.DequeueAsync();
+
+                _logger.LogInformation($"*** Dequeued : {url}{Environment.NewLine}");
 
                 try
                 {

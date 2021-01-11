@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PuppeteerSharp;
 using System;
 using System.Collections.Generic;
@@ -13,14 +14,18 @@ namespace ZeroBrowser.Crawler.Puppeteer
     public class HeadlessBrowserService : IHeadlessBrowserService
     {
         private readonly IManageHeadlessBrowser _manageHeadlessBrowser;
+        private readonly ILogger<HeadlessBrowserService> _logger;
 
-        public HeadlessBrowserService(IManageHeadlessBrowser manageHeadlessBrowser)
+        public HeadlessBrowserService(IManageHeadlessBrowser manageHeadlessBrowser, ILogger<HeadlessBrowserService> logger)
         {
             _manageHeadlessBrowser = manageHeadlessBrowser;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<WebPage>> GetUrls(string url, int jobIndex)
         {
+            _logger.LogInformation($"****** headless browser service recieved new url ${url}.{Environment.NewLine}");
+
             var page = await gotoUrl(url, jobIndex);
 
             var jquerySelector = "$('a[href]')";

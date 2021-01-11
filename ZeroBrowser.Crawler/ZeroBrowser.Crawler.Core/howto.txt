@@ -1,6 +1,13 @@
-﻿{
+﻿0Browser:
+{
 	"seedUrls" : ["https://www.0browser.com"],
 	"headlessBrowserUrl" : "wss://proxy.0browser.com?token={token}"
+}
+
+Local:
+{
+	"seedUrls" : ["https://www.0browser.com"],
+	"headlessBrowserUrl" : "ws://localhost:9222/devtools/browser/3b40e849-154d-4518-b12b-394252a8d774"
 }
 
 
@@ -11,3 +18,7 @@ dotnet ef database update --startup-project ..\ZeroBrowser.Crawler.Api\ZeroBrows
 
 
 docker cp {docker_id}:/app/crawler.db myLocalFilename.db  
+
+
+1. chrome --headless --disable-gpu --remote-debugging-port=9222
+2. http://localhost:9222/json/version

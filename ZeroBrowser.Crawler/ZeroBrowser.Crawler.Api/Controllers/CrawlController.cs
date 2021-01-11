@@ -20,12 +20,14 @@ namespace ZeroBrowser.Crawler.Api.Controllers
         public CrawlController(ILogger<CrawlController> logger, IBackgroundUrlQueue backgroundUrlQueue)
         {
             _logger = logger;
-
+            _backgroundUrlQueue = backgroundUrlQueue;
         }
 
         [HttpPost]
         public IActionResult Post([FromBody] Parameters parameter)
         {
+            _logger.LogInformation($"* url recieved {parameter.SeedUrls.First()}{Environment.NewLine}");
+
             _backgroundUrlQueue.QueueUrlItem(parameter.SeedUrls.First());
 
             return Ok();
