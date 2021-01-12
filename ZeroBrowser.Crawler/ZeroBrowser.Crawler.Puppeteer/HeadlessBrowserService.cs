@@ -26,28 +26,43 @@ namespace ZeroBrowser.Crawler.Puppeteer
 
         public async Task<IEnumerable<WebPage>> GetUrls(string url, int jobIndex)
         {
-            //lets try a couple of times
-            var delay = Backoff.ConstantBackoff(TimeSpan.FromMilliseconds(1000), retryCount: 5);
-
-            var policy = Policy
-            .Handle<Exception>()
-            //.Fallback(a=> { return null; })
-            .WaitAndRetryAsync(delay, onRetry: (response, delay, retryCount, context) =>
+            try
             {
-                _logger.LogInformation($"******* retry GetUrls #{retryCount}{Environment.NewLine}");
-            });
+                //lets try a couple of times
+                var delay = Backoff.ConstantBackoff(TimeSpan.FromMilliseconds(1000), retryCount: 5);
 
-            //policy.FallbackAsync((IEnumerable<WebPage>)null);
+                var policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryAsync(delay, onRetry: (response, delay, retryCount, context) =>
+                {
+                    _logger.LogInformation($"******* retry GetUrls #{retryCount}{Environment.NewLine}");
+                });
 
-            IEnumerable<WebPage> results = await policy.ExecuteAsync<IEnumerable<WebPage>>(async () =>
+                IEnumerable<WebPage> results = await policy.ExecuteAsync<IEnumerable<WebPage>>(async () =>
+                {
+                    return await getWebPage(url, jobIndex);
+                });
+
+                return results;
+            }
+            catch (Exception ex)
             {
-                _logger.LogInformation($"****** headless browser service recieved new url ${url}.{Environment.NewLine}");
+                _logger.LogInformation($"oops failed after many attempts: {ex.Message}");
 
-                var page = await gotoUrl(url, jobIndex);
+                return null;
+            }
+        }
 
-                var jquerySelector = "$('a[href]')";
 
-                var element = await page.EvaluateFunctionAsync(@"(jquerySelector) => {
+        private async Task<IEnumerable<WebPage>> getWebPage(string url, int jobIndex)
+        {
+            _logger.LogInformation($"****** headless browser service recieved new url ${url}.{Environment.NewLine}");
+
+            var page = await gotoUrl(url, jobIndex);
+
+            var jquerySelector = "$('a[href]')";
+
+            var element = await page.EvaluateFunctionAsync(@"(jquerySelector) => {
                     const $ = window.$;
                     var links = eval(jquerySelector).toArray();
 
@@ -59,22 +74,19 @@ namespace ZeroBrowser.Crawler.Puppeteer
                     return JSON.stringify(urls);
                 }", jquerySelector);
 
-                await _manageHeadlessBrowser.ClosePage(jobIndex);
+            await _manageHeadlessBrowser.ClosePage(jobIndex);
 
-                var json = element.ToString();
+            var json = element.ToString();
 
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var results = JsonConvert.DeserializeObject<string[]>(json);
+            if (!string.IsNullOrEmpty(json))
+            {
+                var results = JsonConvert.DeserializeObject<string[]>(json);
 
-                    //lets remove duplicates
-                    return results.Distinct<string>().Select(l => new WebPage { Url = l });
-                }
+                //lets remove duplicates
+                return results.Distinct<string>().Select(l => new WebPage { Url = l });
+            }
 
-                return new List<WebPage>();
-            });
-
-            return results;
+            return new List<WebPage>();
         }
 
         public async Task<HttpStatusCode> HealthCheck(string url, int jobIndex)

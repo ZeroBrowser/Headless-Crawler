@@ -14,6 +14,7 @@ namespace ZeroBrowser.Crawler.Api.HostedService
         private ConcurrentQueue<string> _workItems = new ConcurrentQueue<string>();
         private SemaphoreSlim _signal = new SemaphoreSlim(0);
         private readonly ILogger<BackgroundUrlQueue> _logger;
+        
 
         public BackgroundUrlQueue(ILogger<BackgroundUrlQueue> logger)
         {
@@ -34,11 +35,9 @@ namespace ZeroBrowser.Crawler.Api.HostedService
         }
 
         public async Task<string> DequeueAsync()
-        {
-            //if (_signal.CurrentCount == 0)
-            //    return null;
-
+        {            
             await _signal.WaitAsync();
+
             _workItems.TryDequeue(out var url);
 
             _logger.LogInformation($"** Dequeue {url}{Environment.NewLine}");
