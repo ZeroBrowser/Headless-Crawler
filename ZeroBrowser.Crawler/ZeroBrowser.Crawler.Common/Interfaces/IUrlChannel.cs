@@ -9,6 +9,6 @@ namespace ZeroBrowser.Crawler.Common.Interfaces
     {
         Task Insert(string url);
 
-        IAsyncEnumerable<string> Read();
+        Task<IAsyncEnumerable<string>> Read();
     }
 }

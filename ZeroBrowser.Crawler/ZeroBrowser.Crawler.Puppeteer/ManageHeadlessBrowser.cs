@@ -52,7 +52,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
             .Handle<Exception>()
             .WaitAndRetryAsync(delay, onRetry: (response, delay, retryCount, context) =>
             {
-                _logger.LogInformation($"******* retry #{retryCount}{Environment.NewLine}");
+                _logger.LogInformation($"******* retry ConnectAsync #{retryCount}{Environment.NewLine}");
             });
 
             await policy.ExecuteAsync(async () =>
@@ -71,20 +71,34 @@ namespace ZeroBrowser.Crawler.Puppeteer
         {
             if (_browser == null || _browser.IsClosed)
                 await Init();
+      
+            //lets try a couple of times
+            var delay = Backoff.ConstantBackoff(TimeSpan.FromMilliseconds(1000), retryCount: 5);
 
-
-            BrowserLookup.TryGetValue(index, out Page page);
-            if (page == null)
+            var policy = Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(delay, onRetry: (response, delay, retryCount, context) =>
             {
-                page = await _browser.NewPageAsync();
+                _logger.LogInformation($"******* retry NewPageAsync #{retryCount}{Environment.NewLine}");
+            });
 
-                //lets inject jquery url to any page so we can use it in our queries
-                await page.AddScriptTagAsync(_crawlerOptions.JQueryUrl);
+            T results = await policy.ExecuteAsync<T>(async () =>
+            {
+                BrowserLookup.TryGetValue(index, out Page page);
+                if (page == null)
+                {
+                    page = await _browser.NewPageAsync();
 
-                if (BrowserLookup.TryAdd(index, page))
-                    return page as T;
-            }
-            return page as T;
+                    //lets inject jquery url to any page so we can use it in our queries
+                    await page.AddScriptTagAsync(_crawlerOptions.JQueryUrl);
+
+                    if (BrowserLookup.TryAdd(index, page))
+                        return page as T;
+                }
+                return page as T;
+            });
+
+            return results;
         }
 
         public async Task ClosePage(int index)

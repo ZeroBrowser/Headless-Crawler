@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
 using PuppeteerSharp;
 using System;
 using System.Collections.Generic;
@@ -24,13 +26,28 @@ namespace ZeroBrowser.Crawler.Puppeteer
 
         public async Task<IEnumerable<WebPage>> GetUrls(string url, int jobIndex)
         {
-            _logger.LogInformation($"****** headless browser service recieved new url ${url}.{Environment.NewLine}");
+            //lets try a couple of times
+            var delay = Backoff.ConstantBackoff(TimeSpan.FromMilliseconds(1000), retryCount: 5);
 
-            var page = await gotoUrl(url, jobIndex);
+            var policy = Policy
+            .Handle<Exception>()
+            //.Fallback(a=> { return null; })
+            .WaitAndRetryAsync(delay, onRetry: (response, delay, retryCount, context) =>
+            {
+                _logger.LogInformation($"******* retry GetUrls #{retryCount}{Environment.NewLine}");
+            });
 
-            var jquerySelector = "$('a[href]')";
+            //policy.FallbackAsync((IEnumerable<WebPage>)null);
 
-            var element = await page.EvaluateFunctionAsync(@"(jquerySelector) => {
+            IEnumerable<WebPage> results = await policy.ExecuteAsync<IEnumerable<WebPage>>(async () =>
+            {
+                _logger.LogInformation($"****** headless browser service recieved new url ${url}.{Environment.NewLine}");
+
+                var page = await gotoUrl(url, jobIndex);
+
+                var jquerySelector = "$('a[href]')";
+
+                var element = await page.EvaluateFunctionAsync(@"(jquerySelector) => {
                     const $ = window.$;
                     var links = eval(jquerySelector).toArray();
 
@@ -42,19 +59,22 @@ namespace ZeroBrowser.Crawler.Puppeteer
                     return JSON.stringify(urls);
                 }", jquerySelector);
 
-            await _manageHeadlessBrowser.ClosePage(jobIndex);
+                await _manageHeadlessBrowser.ClosePage(jobIndex);
 
-            var json = element.ToString();
+                var json = element.ToString();
 
-            if (!string.IsNullOrEmpty(json))
-            {
-                var results = JsonConvert.DeserializeObject<string[]>(json);
+                if (!string.IsNullOrEmpty(json))
+                {
+                    var results = JsonConvert.DeserializeObject<string[]>(json);
 
-                //lets remove duplicates
-                return results.Distinct<string>().Select(l => new WebPage { Url = l });
-            }
+                    //lets remove duplicates
+                    return results.Distinct<string>().Select(l => new WebPage { Url = l });
+                }
 
-            return new List<WebPage>();
+                return new List<WebPage>();
+            });
+
+            return results;
         }
 
         public async Task<HttpStatusCode> HealthCheck(string url, int jobIndex)
@@ -70,10 +90,26 @@ namespace ZeroBrowser.Crawler.Puppeteer
 
         private async Task<Page> gotoUrl(string url, int jobIndex)
         {
-            var page = await _manageHeadlessBrowser.GetPage<Page>(jobIndex);
-            await page.GoToAsync(url);
-            await page.WaitForSelectorAsync("body");
-            return page;
+
+            //lets try a couple of times
+            var delay = Backoff.ConstantBackoff(TimeSpan.FromMilliseconds(1000), retryCount: 5);
+
+            var policy = Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(delay, onRetry: (response, delay, retryCount, context) =>
+            {
+                _logger.LogInformation($"******* retry gotoUrl #{retryCount}{Environment.NewLine}");
+            });
+
+            Page results = await policy.ExecuteAsync<Page>(async () =>
+            {
+                var page = await _manageHeadlessBrowser.GetPage<Page>(jobIndex);
+                await page.GoToAsync(url);
+                await page.WaitForSelectorAsync("body");
+                return page;
+            });
+
+            return results;
         }
 
     }

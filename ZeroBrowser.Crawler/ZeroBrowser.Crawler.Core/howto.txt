@@ -7,7 +7,7 @@
 Local:
 {
 	"seedUrls" : ["https://www.0browser.com"],
-	"headlessBrowserUrl" : "ws://localhost:9222/devtools/browser/3b40e849-154d-4518-b12b-394252a8d774"
+	"headlessBrowserUrl" : "ws://localhost:9222/devtools/browser/af0b6287-4bec-4f1a-962a-44c65c3b0ecf"
 }
 
 

@@ -65,7 +65,7 @@ namespace ZeroBrowser.Crawler.Api
             //services.AddHostedService<QueuedHostedService>();
 
             services.AddHostedService<FrontierUrlQueuedHostedService>();
-            //services.AddHostedService<ParallelCrawlerHostedService>();
+            services.AddHostedService<ParallelCrawlerHostedService>();
 
 
 

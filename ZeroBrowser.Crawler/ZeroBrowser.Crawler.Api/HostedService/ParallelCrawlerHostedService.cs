@@ -37,24 +37,28 @@ namespace ZeroBrowser.Crawler.Api.HostedService
         {
             _logger.LogInformation($"***** entered consumer.{Environment.NewLine}");
 
-            // Wait while channel is not empty and still not completed
-            await foreach (var url in _urlChannel.Read())
+            for (var i = 0; i < _executorsCount; i++)
             {
-                _ = Task.Factory.StartNew(async () =>
-                  {
-                      var urls = await _headlessBrowserService.GetUrls(url, 0);
+                var executorTask = new Task(
+                    async () =>
+                    {
+                        while (!cancellationToken.IsCancellationRequested)
+                        {
+                            await foreach (var url in await _urlChannel.Read())
+                            {
+                                var urls = await _headlessBrowserService.GetUrls(url, 0);
 
-                      foreach (var url in urls)
-                      {
-                          _logger.LogInformation($"***** new url found {url}.{Environment.NewLine}");
-                          _backgroundUrlQueue.QueueUrlItem(url.Url);
-                      }
+                                foreach (var newUrl in urls)
+                                {
+                                    _logger.LogInformation($"***** new url found {url}.{Environment.NewLine}");
+                                    _backgroundUrlQueue.QueueUrlItem(newUrl.Url);
+                                }
+                            }
+                        }
+                    }, cancellationToken);
 
-                      //do something inside here
-                  }, TaskCreationOptions.LongRunning);
+                executorTask.Start();
             }
-
-            //return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
