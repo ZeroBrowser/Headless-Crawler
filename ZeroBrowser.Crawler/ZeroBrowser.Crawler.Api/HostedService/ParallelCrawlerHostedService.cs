@@ -48,8 +48,10 @@ namespace ZeroBrowser.Crawler.Api.HostedService
                     {
                         while (!cancellationToken.IsCancellationRequested)
                         {
-                            await foreach (var url in await _urlChannel.Read())
+                            await foreach (var crawlerContext in await _urlChannel.Read())
                             {
+                                var url = crawlerContext.CurrentUrl;
+
                                 //very first time lets populate the seed host name and cache it (static)
                                 //TODO need to set this once somehow.
                                 if (seedHostName == string.Empty)

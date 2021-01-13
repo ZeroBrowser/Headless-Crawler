@@ -29,17 +29,17 @@ namespace ZeroBrowser.Crawler.Api.HostedService
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var url = await UrlQueue.DequeueAsync();
+                var context = await UrlQueue.DequeueAsync();
 
-                _logger.LogInformation($"*** Dequeued : {url}{Environment.NewLine}");
+                _logger.LogInformation($"*** Dequeued : {context.CurrentUrl}{Environment.NewLine}");
 
                 try
                 {
-                    await _frontier.Process(new string[] { url });
+                    await _frontier.Process(context);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error occurred processing url : {url}.", url);
+                    _logger.LogError(ex, "Error occurred processing url : {url}.", context.CurrentUrl);
                 }
             }
         }

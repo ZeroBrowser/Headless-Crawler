@@ -28,7 +28,7 @@ namespace ZeroBrowser.Crawler.Api.Controllers
         {
             _logger.LogInformation($"* url recieved {parameter.SeedUrls.First()}{Environment.NewLine}");
 
-            _backgroundUrlQueue.QueueUrlItem(parameter.SeedUrls.First());
+            _backgroundUrlQueue.QueueUrlItem(parameter.SeedUrls.First(), true);
 
             return Ok();
         }

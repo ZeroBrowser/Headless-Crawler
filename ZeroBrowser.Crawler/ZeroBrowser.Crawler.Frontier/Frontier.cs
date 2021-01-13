@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
+using ZeroBrowser.Crawler.Common.Models;
 
 namespace ZeroBrowser.Crawler.Frontier
 {
@@ -24,33 +25,30 @@ namespace ZeroBrowser.Crawler.Frontier
             _logger = logger;
         }
 
-        public async Task Process(string[] urls)
+        public async Task Process(CrawlerContext crawlerContext)
         {
-            foreach (var url in urls)
+            var url = crawlerContext.CurrentUrl;
+
+            if (url == null)
+                return;
+
+            if (_crawledUrls.ContainsKey(url))
             {
-                if (url == null)
-                    continue;
+                //stop
 
-                if (_crawledUrls.ContainsKey(url))
-                {
-                    //stop
+                _logger.LogInformation($"**** existing url: {url}{Environment.NewLine}");
 
-                    _logger.LogInformation($"**** existing url: {url}{Environment.NewLine}");
-
-                    _crawledUrls[url]++;
-                    continue;
-                }
-                else
-                {
-                    //add to queue
-                    _logger.LogInformation($"**** new url: {url}{Environment.NewLine}");
-
-                    _crawledUrls.TryAdd(url, 1);
-                    //_queue.Enqueue(url);
-                    await _urlProducer.Insert(url);
-                }
+                _crawledUrls[url]++;
             }
+            else
+            {
+                //add to queue
+                _logger.LogInformation($"**** new url: {url}{Environment.NewLine}");
 
+                _crawledUrls.TryAdd(url, 1);
+                //_queue.Enqueue(url);
+                await _urlProducer.Insert(crawlerContext);
+            }
         }
     }
 }

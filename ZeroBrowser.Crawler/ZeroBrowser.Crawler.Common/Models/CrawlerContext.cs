@@ -6,7 +6,10 @@ namespace ZeroBrowser.Crawler.Common.Models
 {
     public class CrawlerContext
     {
-        public string SeedUrl { get; set; }
+        public string CurrentUrl { get; set; }
 
+        public string ParentUrl { get; set; }
+
+        public bool IsSeed { get { return CurrentUrl == ParentUrl; } }
     }
 }
