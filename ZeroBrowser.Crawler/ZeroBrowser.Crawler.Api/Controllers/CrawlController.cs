@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
 using ZeroBrowser.Crawler.Core.Interfaces;
+using ZeroBrowser.Crawler.Frontier;
 
 namespace ZeroBrowser.Crawler.Api.Controllers
 {
@@ -16,12 +17,23 @@ namespace ZeroBrowser.Crawler.Api.Controllers
     {
         private readonly ILogger<CrawlController> _logger;
         private readonly IBackgroundUrlQueue _backgroundUrlQueue;
+        private readonly FrontierState _frontierState;
 
-        public CrawlController(ILogger<CrawlController> logger, IBackgroundUrlQueue backgroundUrlQueue)
+        public CrawlController(ILogger<CrawlController> logger, IBackgroundUrlQueue backgroundUrlQueue, FrontierState frontierState)
         {
             _logger = logger;
             _backgroundUrlQueue = backgroundUrlQueue;
+            _frontierState = frontierState;
         }
+
+        [HttpGet]
+        public IActionResult Get()
+        {
+            var urls = _frontierState.CrawledUrls.Select(a => a.Key);
+
+            return Ok(urls);
+        }
+
 
         [HttpPost]
         public IActionResult Post([FromBody] Parameters parameter)

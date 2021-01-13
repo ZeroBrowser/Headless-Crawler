@@ -10,6 +10,6 @@ namespace ZeroBrowser.Crawler.Common.Models
 
         public string ParentUrl { get; set; }
 
-        public bool IsSeed { get { return CurrentUrl == ParentUrl; } }
+        public bool IsSeed { get; set; }
     }
 }

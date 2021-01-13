@@ -10,43 +10,42 @@ using ZeroBrowser.Crawler.Common.Models;
 namespace ZeroBrowser.Crawler.Frontier
 {
     public class Frontier : IFrontier
-    {
-        //key is url and value is number of times this url is pass in to Frontier
-        private readonly ConcurrentDictionary<string, int> _crawledUrls;
-        private readonly ConcurrentQueue<string> _queue;
+    {        
         private readonly IUrlChannel _urlProducer;
         private readonly ILogger<Frontier> _logger;
+        private FrontierState _frontierState;
 
-        public Frontier(IUrlChannel urlProducer, ILogger<Frontier> logger)
+        public Frontier(IUrlChannel urlProducer, ILogger<Frontier> logger, FrontierState frontierState)
         {
-            _crawledUrls = new ConcurrentDictionary<string, int>();
-            _queue = new ConcurrentQueue<string>();
             _urlProducer = urlProducer;
             _logger = logger;
+            _frontierState = frontierState;
         }
 
         public async Task Process(CrawlerContext crawlerContext)
         {
+            if (crawlerContext.IsSeed)
+                _frontierState.Reset();
+
             var url = crawlerContext.CurrentUrl;
 
             if (url == null)
                 return;
 
-            if (_crawledUrls.ContainsKey(url))
+            if (_frontierState.CrawledUrls.ContainsKey(url))
             {
                 //stop
 
                 _logger.LogInformation($"**** existing url: {url}{Environment.NewLine}");
 
-                _crawledUrls[url]++;
+                _frontierState.CrawledUrls[url]++;
             }
             else
             {
                 //add to queue
                 _logger.LogInformation($"**** new url: {url}{Environment.NewLine}");
 
-                _crawledUrls.TryAdd(url, 1);
-                //_queue.Enqueue(url);
+                _frontierState.CrawledUrls.TryAdd(url, 1);
                 await _urlProducer.Insert(crawlerContext);
             }
         }

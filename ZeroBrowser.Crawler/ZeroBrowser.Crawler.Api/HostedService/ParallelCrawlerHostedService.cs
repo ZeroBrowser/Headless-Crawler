@@ -16,13 +16,14 @@ namespace ZeroBrowser.Crawler.Api.HostedService
     public class ParallelCrawlerHostedService : IHostedService
     {
         private readonly ILogger _logger;
-        private int _maxNumOfParallelOperations = 10;
-        private int _executorsCount = 2;
-        private IUrlChannel _urlChannel { get; }
+        private readonly int _executorsCount;
+        private readonly Task[] _executors;
+        private IUrlChannel _urlChannel;
         private readonly IHeadlessBrowserService _headlessBrowserService;
         private readonly IBackgroundUrlQueue _backgroundUrlQueue;
         private static string seedHostName = string.Empty;
         private CrawlerOptions _crawlerOptions;
+        private CancellationTokenSource _tokenSource;
 
         public ParallelCrawlerHostedService(IUrlChannel urlChannel,
                                             ILoggerFactory loggerFactory,
@@ -35,11 +36,14 @@ namespace ZeroBrowser.Crawler.Api.HostedService
             _logger = loggerFactory.CreateLogger<QueuedHostedService>();
             _headlessBrowserService = headlessBrowserService;
             _backgroundUrlQueue = backgroundUrlQueue;
+            _executorsCount = _crawlerOptions.NumberOfParallelInstances;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation($"***** entered consumer.{Environment.NewLine}");
+            
+            _tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
             for (var i = 0; i < _executorsCount; i++)
             {
@@ -54,7 +58,7 @@ namespace ZeroBrowser.Crawler.Api.HostedService
 
                                 //very first time lets populate the seed host name and cache it (static)
                                 //TODO need to set this once somehow.
-                                if (seedHostName == string.Empty)
+                                if (crawlerContext.IsSeed)
                                     seedHostName = new Uri(url).Host.Replace("www.", string.Empty);
 
                                 var urls = await _headlessBrowserService.GetUrls(url, 0);
@@ -74,7 +78,7 @@ namespace ZeroBrowser.Crawler.Api.HostedService
                                 }
                             }
                         }
-                    }, cancellationToken);
+                    }, _tokenSource.Token);
 
                 executorTask.Start();
             }
@@ -82,6 +86,13 @@ namespace ZeroBrowser.Crawler.Api.HostedService
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            _tokenSource.Cancel(); // send the cancellation signal
+
+            if (_executors != null)
+            {
+                // wait for _executors completion
+                Task.WaitAll(_executors, cancellationToken);
+            }
 
             return Task.CompletedTask;
         }

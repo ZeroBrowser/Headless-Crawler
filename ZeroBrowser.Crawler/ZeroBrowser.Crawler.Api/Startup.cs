@@ -13,6 +13,7 @@ using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
 using ZeroBrowser.Crawler.Core;
 using ZeroBrowser.Crawler.Core.Interfaces;
+using ZeroBrowser.Crawler.Frontier;
 using ZeroBrowser.Crawler.Puppeteer;
 using IFrontier = ZeroBrowser.Crawler.Common.Interfaces.IFrontier;
 
@@ -49,12 +50,12 @@ namespace ZeroBrowser.Crawler.Api
             //services.AddScoped<ICrawler, Core.Crawler>();
             services.AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>();
             services.AddSingleton<IBackgroundUrlQueue, BackgroundUrlQueue>();
-
+            services.AddSingleton<FrontierState>();
 
             //services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             //services.AddTransient<IRepository, SQLiteRepository>();
 
-            services.AddSingleton<IManageHeadlessBrowser, ManageHeadlessBrowser>();            
+            services.AddSingleton<IManageHeadlessBrowser, ManageHeadlessBrowser>();
             services.AddSingleton<IUrlChannel, UrlChannel>();
 
             services.AddSingleton<IFrontier, Frontier.Frontier>();

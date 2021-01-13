@@ -29,10 +29,7 @@ namespace ZeroBrowser.Crawler.Api.HostedService
                 throw new ArgumentNullException(nameof(url));
             }
 
-            if (isSeed)
-            {
-                _crawlerContext = new CrawlerContext() { CurrentUrl = url, ParentUrl = url };
-            }
+            _crawlerContext = new CrawlerContext() { CurrentUrl = url, ParentUrl = url, IsSeed = isSeed };
 
             _logger.LogInformation($"** Enqueue {url}{Environment.NewLine}");
 
