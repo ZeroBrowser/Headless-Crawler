@@ -24,12 +24,13 @@ namespace ZeroBrowser.Crawler.Api.HostedService
         private static string seedHostName = string.Empty;
         private CrawlerOptions _crawlerOptions;
         private CancellationTokenSource _tokenSource;
+        private List<string> _blackList = new List<string> { "ws", "wss", "mailto" };
 
         public ParallelCrawlerHostedService(IUrlChannel urlChannel,
-                                            ILoggerFactory loggerFactory,
-                                            IOptions<CrawlerOptions> crawlerOptions,
-                                            IHeadlessBrowserService headlessBrowserService,
-                                            IBackgroundUrlQueue backgroundUrlQueue)
+                                                ILoggerFactory loggerFactory,
+                                                IOptions<CrawlerOptions> crawlerOptions,
+                                                IHeadlessBrowserService headlessBrowserService,
+                                                IBackgroundUrlQueue backgroundUrlQueue)
         {
             _crawlerOptions = crawlerOptions.Value;
             _urlChannel = urlChannel;
@@ -37,12 +38,13 @@ namespace ZeroBrowser.Crawler.Api.HostedService
             _headlessBrowserService = headlessBrowserService;
             _backgroundUrlQueue = backgroundUrlQueue;
             _executorsCount = _crawlerOptions.NumberOfParallelInstances;
+            _executors = new Task[_executorsCount];
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation($"***** entered consumer.{Environment.NewLine}");
-            
+
             _tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
             for (var i = 0; i < _executorsCount; i++)
@@ -50,38 +52,46 @@ namespace ZeroBrowser.Crawler.Api.HostedService
                 var executorTask = new Task(
                     async () =>
                     {
-                        while (!cancellationToken.IsCancellationRequested)
+
+                        await foreach (var crawlerContext in await _urlChannel.Read())
                         {
-                            await foreach (var crawlerContext in await _urlChannel.Read())
+                            var url = crawlerContext.CurrentUrl;
+
+                            //very first time lets populate the seed host name and cache it (static)
+                            //TODO need to set this once somehow.
+                            if (crawlerContext.IsSeed)
+                                seedHostName = new Uri(url).Host.Replace("www.", string.Empty);
+
+                            var urls = await _headlessBrowserService.GetUrls(url, 0);
+
+                            if (urls == null)
+                                continue;
+
+                            foreach (var newUrl in urls)
                             {
-                                var url = crawlerContext.CurrentUrl;
+                                _logger.LogInformation($"***** new url found {url}.{Environment.NewLine}");
 
-                                //very first time lets populate the seed host name and cache it (static)
-                                //TODO need to set this once somehow.
-                                if (crawlerContext.IsSeed)
-                                    seedHostName = new Uri(url).Host.Replace("www.", string.Empty);
-
-                                var urls = await _headlessBrowserService.GetUrls(url, 0);
-
-                                if (urls == null)
+                                if (!isUrlAllowed(newUrl.Url))
                                     continue;
 
-                                foreach (var newUrl in urls)
-                                {
-                                    _logger.LogInformation($"***** new url found {url}.{Environment.NewLine}");
-
-                                    //lets not crawl if the site is outside seed url (main site)
-                                    if (!newUrl.Url.Contains(seedHostName) || new HashSet<string> { "ws", "ws", "mailto" }.Contains(newUrl.Url))
-                                        continue;
-
-                                    _backgroundUrlQueue.QueueUrlItem(newUrl.Url);
-                                }
+                                _backgroundUrlQueue.QueueUrlItem(newUrl.Url);
                             }
                         }
+
                     }, _tokenSource.Token);
 
+                _executors[i] = executorTask;
                 executorTask.Start();
             }
+        }
+
+        private bool isUrlAllowed(string url)
+        {
+            //lets not crawl if the site is outside seed url (main site)
+            if (!url.Contains(seedHostName) || _blackList.Any(badKeyWord => url.Substring(0, badKeyWord.Length - 1) == badKeyWord))
+                return false;
+
+            return true;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
