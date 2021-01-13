@@ -24,7 +24,7 @@ namespace ZeroBrowser.Crawler.Api.HostedService
         private static string seedHostName = string.Empty;
         private CrawlerOptions _crawlerOptions;
         private CancellationTokenSource _tokenSource;
-        private List<string> _blackList = new List<string> { "ws", "wss", "mailto" };
+        private List<string> _blackList = new List<string> { "ws", "mailto" };
 
         public ParallelCrawlerHostedService(IUrlChannel urlChannel,
                                                 ILoggerFactory loggerFactory,
@@ -88,7 +88,7 @@ namespace ZeroBrowser.Crawler.Api.HostedService
         private bool isUrlAllowed(string url)
         {
             //lets not crawl if the site is outside seed url (main site)
-            if (!url.Contains(seedHostName) || _blackList.Any(badKeyWord => url.Substring(0, badKeyWord.Length - 1) == badKeyWord))
+            if (!url.Contains(seedHostName) || _blackList.Any(badKeyWord => url.Substring(0, badKeyWord.Length) == badKeyWord))
                 return false;
 
             return true;
