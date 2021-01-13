@@ -102,26 +102,10 @@ namespace ZeroBrowser.Crawler.Puppeteer
 
         private async Task<Page> gotoUrl(string url, int jobIndex)
         {
-
-            //lets try a couple of times
-            var delay = Backoff.ConstantBackoff(TimeSpan.FromMilliseconds(1000), retryCount: 5);
-
-            var policy = Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(delay, onRetry: (response, delay, retryCount, context) =>
-            {
-                _logger.LogInformation($"******* retry gotoUrl #{retryCount}{Environment.NewLine}");
-            });
-
-            Page results = await policy.ExecuteAsync<Page>(async () =>
-            {
-                var page = await _manageHeadlessBrowser.GetPage<Page>(jobIndex);
-                await page.GoToAsync(url);
-                await page.WaitForSelectorAsync("body");
-                return page;
-            });
-
-            return results;
+            var page = await _manageHeadlessBrowser.GetPage<Page>(jobIndex);
+            await page.GoToAsync(url);
+            await page.WaitForSelectorAsync("body");
+            return page;
         }
 
     }
