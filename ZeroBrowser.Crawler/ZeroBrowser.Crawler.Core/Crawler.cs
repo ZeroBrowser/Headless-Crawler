@@ -18,10 +18,6 @@ namespace ZeroBrowser.Crawler.Core
     {
         private readonly ILogger<Crawler> _logger;
         private readonly IHeadlessBrowserService _headlessBrowserService;
-        private readonly IFrontier _frontier;
-        private readonly IBackgroundTaskQueue _backgroundTaskQueue;
-        private static int jobIndex = 0;
-        private static int totalPagesCrawled = 0;
         private static string seedHostName = string.Empty;
         private readonly IBackgroundUrlQueue _backgroundUrlQueue;
         private readonly CrawlerOptions _crawlerOptions;
@@ -30,16 +26,12 @@ namespace ZeroBrowser.Crawler.Core
 
         public Crawler(ILogger<Crawler> logger,
                        IHeadlessBrowserService headlessBrowserService,
-                       IFrontier frontier,
-                       IBackgroundTaskQueue backgroundTaskQueue,
                        IOptions<CrawlerOptions> crawlerOptions,
                        IRepository repository,
                        IBackgroundUrlQueue backgroundUrlQueue)
         {
             _logger = logger;
             _headlessBrowserService = headlessBrowserService;
-            _frontier = frontier;
-            _backgroundTaskQueue = backgroundTaskQueue;
             _crawlerOptions = crawlerOptions.Value;
             _repository = repository;
             _backgroundUrlQueue = backgroundUrlQueue;
@@ -80,21 +72,6 @@ namespace ZeroBrowser.Crawler.Core
                 return false;
 
             return true;
-        }
-
-        private void incrementCounter()
-        {
-            Interlocked.Increment(ref jobIndex);
-            Interlocked.Increment(ref totalPagesCrawled);
-        }
-
-        private void resetCounter()
-        {
-            //lets reset to 0
-            if (Volatile.Read(ref jobIndex) == _crawlerOptions.NumberOfParallelInstances)
-            {
-                Volatile.Write(ref jobIndex, 0);
-            }
         }
     }
 }
