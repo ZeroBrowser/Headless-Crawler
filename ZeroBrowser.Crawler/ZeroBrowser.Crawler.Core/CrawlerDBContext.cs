@@ -5,20 +5,20 @@ using System.Net;
 
 namespace ZeroBrowser.Crawler.Core
 {
-    public class CrawlerContext : DbContext
+    public class CrawlerDBContext : DbContext
     {
-        public CrawlerContext()
+        public CrawlerDBContext()
         {
 
         }
 
-        public CrawlerContext(DbContextOptions<CrawlerContext> options) : base(options)
+        public CrawlerDBContext(DbContextOptions<CrawlerDBContext> options) : base(options)
         {
 
         }
 
 
-        protected CrawlerContext(DbContextOptions contextOptions) : base(contextOptions)
+        protected CrawlerDBContext(DbContextOptions contextOptions) : base(contextOptions)
         {
         }
 

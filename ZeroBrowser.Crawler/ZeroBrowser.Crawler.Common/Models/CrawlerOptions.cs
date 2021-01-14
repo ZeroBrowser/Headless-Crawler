@@ -30,5 +30,7 @@ namespace ZeroBrowser.Crawler.Common.Models
         public ushort MaxNumOfPagesAllowedToBeCrawled { get; set; }
 
         public string SeedUrl { get; set; }
+
+        public int PolitenessDelay { get; set; }
     }
 }

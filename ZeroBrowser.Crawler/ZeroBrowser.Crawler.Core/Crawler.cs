@@ -23,16 +23,18 @@ namespace ZeroBrowser.Crawler.Core
         private static int jobIndex = 0;
         private static int totalPagesCrawled = 0;
         private static string seedHostName = string.Empty;
-
+        private readonly IBackgroundUrlQueue _backgroundUrlQueue;
         private readonly CrawlerOptions _crawlerOptions;
         private readonly IRepository _repository;
+        private List<string> _blackList = new List<string> { "ws", "mailto" };
 
         public Crawler(ILogger<Crawler> logger,
                        IHeadlessBrowserService headlessBrowserService,
                        IFrontier frontier,
                        IBackgroundTaskQueue backgroundTaskQueue,
                        IOptions<CrawlerOptions> crawlerOptions,
-                       IRepository repository)
+                       IRepository repository,
+                       IBackgroundUrlQueue backgroundUrlQueue)
         {
             _logger = logger;
             _headlessBrowserService = headlessBrowserService;
@@ -40,51 +42,44 @@ namespace ZeroBrowser.Crawler.Core
             _backgroundTaskQueue = backgroundTaskQueue;
             _crawlerOptions = crawlerOptions.Value;
             _repository = repository;
+            _backgroundUrlQueue = backgroundUrlQueue;
         }
 
 
-        public async Task Crawl(string url)
+        public async Task Crawl(CrawlerContext crawlerContext)
         {
+            var url = crawlerContext.CurrentUrl;
+
             //very first time lets populate the seed host name and cache it (static)
-            if (seedHostName == string.Empty)
-            {
+            //TODO need to set this once somehow.
+            if (crawlerContext.IsSeed)
                 seedHostName = new Uri(url).Host.Replace("www.", string.Empty);
-                await _repository.AddPages(null, new List<string> { url });
-            }
 
-            _logger.LogInformation($"Url : {url}");
+            Task.Delay(_crawlerOptions.PolitenessDelay).Wait();
 
-            //1. lets get the page information
-            var urls = await _headlessBrowserService.GetUrls(url, jobIndex);
+            var urls = await _headlessBrowserService.GetUrls(url, 0);
 
-            //2. list of all pages to crawl
-            var newUrls = await _frontier.Process(url, urls);
+            if (urls == null)
+                return;
 
-            foreach (var newUrl in newUrls)
+            foreach (var newUrl in urls)
             {
-                //lets not crawl if the site is outside seed url (main site)
-                if (!newUrl.Contains(seedHostName))
+                _logger.LogInformation($"***** new url found {url}.{Environment.NewLine}");
+
+                if (!isUrlAllowed(newUrl.Url))
                     continue;
 
-                //do health check and save in DB using Repository
-                var httpStatusCode = await _headlessBrowserService.HealthCheck(url, jobIndex);
-                await _repository.UpdateHttpStatusCode(url, httpStatusCode);
-
-                //if total pages crawled reaches max number of pages allowed Enforce limit
-                if (_crawlerOptions.MaxNumOfPagesAllowedToBeCrawled == Volatile.Read(ref totalPagesCrawled))
-                    break;
-
-                Task.Delay(1000).Wait();
-
-                incrementCounter();
-
-                _backgroundTaskQueue.QueueBackgroundWorkItem(async token =>
-                {
-                    await Crawl(newUrl.ToString());
-                });
-
-                resetCounter();
+                _backgroundUrlQueue.QueueUrlItem(newUrl.Url);
             }
+        }
+
+        private bool isUrlAllowed(string url)
+        {
+            //lets not crawl if the site is outside seed url (main site)
+            if (!url.Contains(seedHostName) || _blackList.Any(badKeyWord => url.Substring(0, badKeyWord.Length) == badKeyWord))
+                return false;
+
+            return true;
         }
 
         private void incrementCounter()

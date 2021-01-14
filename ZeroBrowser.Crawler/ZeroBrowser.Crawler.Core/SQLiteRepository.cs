@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ZeroBrowser.Crawler.Common.Interfaces;
-using static ZeroBrowser.Crawler.Core.CrawlerContext;
+using static ZeroBrowser.Crawler.Core.CrawlerDBContext;
 
 namespace ZeroBrowser.Crawler.Core
 {
@@ -25,7 +25,7 @@ namespace ZeroBrowser.Crawler.Core
 
         public async Task AddPages(string parentUrl, List<string> pagesToCrawl)
         {
-            using (var _crawlerContext = new CrawlerContext())
+            using (var _crawlerContext = new CrawlerDBContext())
             {
                 _logger.LogInformation($"CrawlerContext HashCode : {_crawlerContext.GetHashCode()}");
 
@@ -66,7 +66,7 @@ namespace ZeroBrowser.Crawler.Core
             record.HttpStatusCode = statusCode;
             record.Updated = DateTime.UtcNow;
 
-            using (var _crawlerContext = new CrawlerContext())
+            using (var _crawlerContext = new CrawlerDBContext())
             {
                 await _crawlerContext.SaveChangesAsync();
             }
@@ -77,7 +77,7 @@ namespace ZeroBrowser.Crawler.Core
         {
             var hashedUrl = url.CreateMD5();
 
-            using (var _crawlerContext = new CrawlerContext())
+            using (var _crawlerContext = new CrawlerDBContext())
             {
                 var record = await _crawlerContext.CrawledRecords.FirstOrDefaultAsync(a => a.HashedUrl == hashedUrl);
 
@@ -87,7 +87,7 @@ namespace ZeroBrowser.Crawler.Core
 
         public async Task<T> GetCrawledRecord<T>(Expression<Func<T, bool>> source) where T : class
         {
-            using (var _crawlerContext = new CrawlerContext())
+            using (var _crawlerContext = new CrawlerDBContext())
             {
                 var record = await _crawlerContext.Set<T>().FirstOrDefaultAsync(source);
 

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using ZeroBrowser.Crawler.Common.CustomValidations;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
+using ZeroBrowser.Crawler.Core.Interfaces;
 
 namespace ZeroBrowser.Crawler.Api.HostedService
 {
@@ -24,21 +25,23 @@ namespace ZeroBrowser.Crawler.Api.HostedService
         private static string seedHostName = string.Empty;
         private CrawlerOptions _crawlerOptions;
         private CancellationTokenSource _tokenSource;
-        private List<string> _blackList = new List<string> { "ws", "mailto" };
+        private readonly ICrawler _crawler;
 
         public ParallelCrawlerHostedService(IUrlChannel urlChannel,
-                                                ILoggerFactory loggerFactory,
-                                                IOptions<CrawlerOptions> crawlerOptions,
-                                                IHeadlessBrowserService headlessBrowserService,
-                                                IBackgroundUrlQueue backgroundUrlQueue)
+                                            ILoggerFactory loggerFactory,
+                                            IOptions<CrawlerOptions> crawlerOptions,
+                                            IHeadlessBrowserService headlessBrowserService,
+                                            IBackgroundUrlQueue backgroundUrlQueue,
+                                            ICrawler crawler)
         {
             _crawlerOptions = crawlerOptions.Value;
             _urlChannel = urlChannel;
-            _logger = loggerFactory.CreateLogger<QueuedHostedService>();
+            _logger = loggerFactory.CreateLogger<ParallelCrawlerHostedService>();
             _headlessBrowserService = headlessBrowserService;
             _backgroundUrlQueue = backgroundUrlQueue;
             _executorsCount = _crawlerOptions.NumberOfParallelInstances;
             _executors = new Task[_executorsCount];
+            _crawler = crawler;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -52,30 +55,9 @@ namespace ZeroBrowser.Crawler.Api.HostedService
                 var executorTask = new Task(
                     async () =>
                     {
-
                         await foreach (var crawlerContext in await _urlChannel.Read())
                         {
-                            var url = crawlerContext.CurrentUrl;
-
-                            //very first time lets populate the seed host name and cache it (static)
-                            //TODO need to set this once somehow.
-                            if (crawlerContext.IsSeed)
-                                seedHostName = new Uri(url).Host.Replace("www.", string.Empty);
-
-                            var urls = await _headlessBrowserService.GetUrls(url, 0);
-
-                            if (urls == null)
-                                continue;
-
-                            foreach (var newUrl in urls)
-                            {
-                                _logger.LogInformation($"***** new url found {url}.{Environment.NewLine}");
-
-                                if (!isUrlAllowed(newUrl.Url))
-                                    continue;
-
-                                _backgroundUrlQueue.QueueUrlItem(newUrl.Url);
-                            }
+                            await _crawler.Crawl(crawlerContext);
                         }
 
                     }, _tokenSource.Token);
@@ -85,14 +67,6 @@ namespace ZeroBrowser.Crawler.Api.HostedService
             }
         }
 
-        private bool isUrlAllowed(string url)
-        {
-            //lets not crawl if the site is outside seed url (main site)
-            if (!url.Contains(seedHostName) || _blackList.Any(badKeyWord => url.Substring(0, badKeyWord.Length) == badKeyWord))
-                return false;
-
-            return true;
-        }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
