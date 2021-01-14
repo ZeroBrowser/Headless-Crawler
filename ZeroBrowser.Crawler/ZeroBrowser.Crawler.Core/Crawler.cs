@@ -1,16 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
-using ZeroBrowser.Crawler.Core.Interfaces;
-using IFrontier = ZeroBrowser.Crawler.Core.Interfaces.IFrontier;
 
 namespace ZeroBrowser.Crawler.Core
 {

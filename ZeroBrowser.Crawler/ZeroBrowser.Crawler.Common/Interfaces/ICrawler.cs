@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Models;
 
-namespace ZeroBrowser.Crawler.Core.Interfaces
+namespace ZeroBrowser.Crawler.Common.Interfaces
 {
     public interface ICrawler
     {

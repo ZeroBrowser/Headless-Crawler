@@ -1,21 +1,16 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System;
 using ZeroBrowser.Crawler.Api.HostedService;
 using ZeroBrowser.Crawler.Common.Frontier;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
-using ZeroBrowser.Crawler.Core;
-using ZeroBrowser.Crawler.Core.Interfaces;
 using ZeroBrowser.Crawler.Frontier;
 using ZeroBrowser.Crawler.Puppeteer;
-using IFrontier = ZeroBrowser.Crawler.Common.Interfaces.IFrontier;
 
 namespace ZeroBrowser.Crawler.Api
 {

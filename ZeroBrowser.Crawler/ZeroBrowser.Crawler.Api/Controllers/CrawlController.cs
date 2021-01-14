@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
-using ZeroBrowser.Crawler.Core.Interfaces;
 using ZeroBrowser.Crawler.Frontier;
 
 namespace ZeroBrowser.Crawler.Api.Controllers
