@@ -63,8 +63,15 @@ namespace ZeroBrowser.Crawler.Core
         private bool isUrlAllowed(string url)
         {
             //lets not crawl if the site is outside seed url (main site)
-            if (!url.Contains(seedHostName) || _blackList.Any(badKeyWord => url.Substring(0, badKeyWord.Length) == badKeyWord))
+            if (!url.Contains(seedHostName))
                 return false;
+
+            //lets remove not so intresting protocls
+            if (_blackList.Any(badKeyWord => url.Substring(0, badKeyWord.Length) == badKeyWord))
+                return false;
+
+
+
 
             return true;
         }

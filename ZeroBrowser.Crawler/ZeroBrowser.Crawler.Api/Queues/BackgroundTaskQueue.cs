@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 
-namespace ZeroBrowser.Crawler.Api.HostedService
+namespace ZeroBrowser.Crawler.Api.Queues
 {
     public class BackgroundTaskQueue : IBackgroundTaskQueue
     {

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using ZeroBrowser.Crawler.Api.HostedService;
+using ZeroBrowser.Crawler.Api.Queues;
 using ZeroBrowser.Crawler.Common.Frontier;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;

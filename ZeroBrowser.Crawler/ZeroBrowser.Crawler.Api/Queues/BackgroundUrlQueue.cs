@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
 
-namespace ZeroBrowser.Crawler.Api.HostedService
+namespace ZeroBrowser.Crawler.Api.Queues
 {
     public class BackgroundUrlQueue : IBackgroundUrlQueue
     {
