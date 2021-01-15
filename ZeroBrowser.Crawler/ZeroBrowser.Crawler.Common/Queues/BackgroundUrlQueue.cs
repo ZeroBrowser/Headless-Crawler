@@ -1,14 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
 
-namespace ZeroBrowser.Crawler.Api.Queues
+namespace ZeroBrowser.Crawler.Common.Queues
 {
     public class BackgroundUrlQueue : IBackgroundUrlQueue
     {

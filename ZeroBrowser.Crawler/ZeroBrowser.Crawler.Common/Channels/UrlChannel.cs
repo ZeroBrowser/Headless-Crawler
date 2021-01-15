@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
 
-namespace ZeroBrowser.Crawler.Common.Frontier
+namespace ZeroBrowser.Crawler.Common.Channels
 {
     public class UrlChannel : IUrlChannel
     {
