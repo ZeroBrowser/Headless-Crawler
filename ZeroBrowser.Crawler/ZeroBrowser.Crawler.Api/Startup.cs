@@ -64,6 +64,7 @@ namespace ZeroBrowser.Crawler.Api
             services.AddHostedService<FrontierUrlQueuedHostedService>();
             services.AddHostedService<ParallelCrawlerHostedService>();
 
+            services.AddSingleton<IRepositoryQueue, RepositoryQueue>();
 
 
             services.AddControllers();

@@ -6,24 +6,24 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ZeroBrowser.Crawler.Common.Interfaces;
+using ZeroBrowser.Crawler.Core;
+using static ZeroBrowser.Crawler.Core.CrawlerDBContext;
 
 namespace ZeroBrowser.Crawler.Api.HostedService
 {
-    public class FrontierUrlQueuedHostedService : BackgroundService
+    public class RepositoryQueuedHostedService : BackgroundService
     {
-        private readonly ILogger<FrontierUrlQueuedHostedService> _logger;
-        private readonly IFrontier _frontier;
-        private readonly IRepositoryQueue _repositoryQueue;
+        private readonly ILogger<RepositoryQueuedHostedService> _logger;
+        private readonly CrawlerDBContext _crawlerDBContext;
 
-        public FrontierUrlQueuedHostedService(IBackgroundUrlQueue urlQueue, ILogger<FrontierUrlQueuedHostedService> logger, IFrontier frontier, IRepositoryQueue repositoryQueue)
+        public RepositoryQueuedHostedService(IRepositoryQueue repositoryQueue, ILogger<RepositoryQueuedHostedService> logger, CrawlerDBContext crawlerDBContext)
         {
-            UrlQueue = urlQueue;
+            RepositoryQueue = repositoryQueue;
             _logger = logger;
-            _frontier = frontier;
-            _repositoryQueue = repositoryQueue;
+            _crawlerDBContext = crawlerDBContext;
         }
 
-        public IBackgroundUrlQueue UrlQueue { get; }
+        public IRepositoryQueue RepositoryQueue { get; }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -31,14 +31,14 @@ namespace ZeroBrowser.Crawler.Api.HostedService
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var context = await UrlQueue.DequeueAsync();
+                var context = await RepositoryQueue.DequeueAsync();
 
                 _logger.LogInformation($"*** Dequeued : {context.CurrentUrl}{Environment.NewLine}");
 
                 try
                 {
-                    await _frontier.Process(context);
-                    _repositoryQueue.QueueUrlItem(context);
+                    //Save in repo
+                    await _crawlerDBContext.CrawledRecords.AddAsync(new CrawledRecord { });
                 }
                 catch (Exception ex)
                 {
