@@ -40,33 +40,23 @@ namespace ZeroBrowser.Crawler.Api
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.            
-            //services.AddDbContextPool<CrawlerContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDbContext<CrawlerDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient, ServiceLifetime.Transient);
-
-            //services.AddHealthChecks().AddDbContextCheck<CrawlerContext>();
+            services.AddDbContext<CrawlerDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
 
             services.AddSingleton<ICrawler, Core.Crawler>();
             services.AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>();
             services.AddSingleton<IBackgroundUrlQueue, BackgroundUrlQueue>();
             services.AddSingleton<FrontierState>();
-
-            //services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddSingleton<IRepositoryQueue, RepositoryQueue>();
             services.AddSingleton<IRepository, SQLiteRepository>();
-
             services.AddSingleton<IManageHeadlessBrowser, ManageHeadlessBrowser>();
             services.AddSingleton<IUrlChannel, UrlChannel>();
-
             services.AddSingleton<IFrontier, Frontier.Frontier>();
-
-            services.Configure<CrawlerOptions>(Configuration.GetSection(CrawlerOptions.Section));
-
-            //services.AddHostedService<ParallelQueuedHostedService>();
-            //services.AddHostedService<QueuedHostedService>();
-
+            
             services.AddHostedService<FrontierUrlQueuedHostedService>();
             services.AddHostedService<ParallelCrawlerHostedService>();
-
-            services.AddSingleton<IRepositoryQueue, RepositoryQueue>();
+            services.AddHostedService<RepositoryQueuedHostedService>();
+            
+            services.Configure<CrawlerOptions>(Configuration.GetSection(CrawlerOptions.Section));
 
 
             services.AddControllers();

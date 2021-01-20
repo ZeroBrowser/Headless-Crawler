@@ -7,11 +7,7 @@ namespace ZeroBrowser.Crawler.Core
 {
     public class CrawlerDBContext : DbContext
     {
-        public CrawlerDBContext()
-        {
-
-        }
-
+        
         public CrawlerDBContext(DbContextOptions<CrawlerDBContext> options) : base(options)
         {
 
@@ -22,8 +18,7 @@ namespace ZeroBrowser.Crawler.Core
         {
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite("Data Source=crawler.db;");
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CrawledRecord>().HasIndex(b => b.HashedUrl);

@@ -13,8 +13,7 @@ namespace ZeroBrowser.Crawler.Common.Queues
         private ConcurrentQueue<CrawlerContext> _crawlerContextQueue = new ConcurrentQueue<CrawlerContext>();
         private SemaphoreSlim _signal = new SemaphoreSlim(0);
         private readonly ILogger<RepositoryQueue> _logger;
-        private CrawlerContext _crawlerContext;
-
+        
         public RepositoryQueue(ILogger<RepositoryQueue> logger)
         {
             _logger = logger;
@@ -27,7 +26,7 @@ namespace ZeroBrowser.Crawler.Common.Queues
                 throw new ArgumentNullException(nameof(crawlerContext));
             }
 
-            _crawlerContextQueue.Enqueue(_crawlerContext);
+            _crawlerContextQueue.Enqueue(crawlerContext);
             _signal.Release();
         }
 
