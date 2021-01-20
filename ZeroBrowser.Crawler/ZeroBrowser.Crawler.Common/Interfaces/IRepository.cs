@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using ZeroBrowser.Crawler.Common.Models;
 
 namespace ZeroBrowser.Crawler.Common.Interfaces
 {
@@ -11,7 +12,7 @@ namespace ZeroBrowser.Crawler.Common.Interfaces
     {
         Task<bool> Exist(string url);
 
-        Task AddPages(string parentUrl, List<string> pagesToCrawl);
+        Task AddPage(CrawlerContext crawlerContext);
 
         Task UpdateHttpStatusCode(string url, HttpStatusCode statusCode);
 

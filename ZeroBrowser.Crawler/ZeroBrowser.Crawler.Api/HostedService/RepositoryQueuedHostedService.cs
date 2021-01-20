@@ -14,13 +14,13 @@ namespace ZeroBrowser.Crawler.Api.HostedService
     public class RepositoryQueuedHostedService : BackgroundService
     {
         private readonly ILogger<RepositoryQueuedHostedService> _logger;
-        private readonly CrawlerDBContext _crawlerDBContext;
+        private readonly IRepository _repository;
 
-        public RepositoryQueuedHostedService(IRepositoryQueue repositoryQueue, ILogger<RepositoryQueuedHostedService> logger, CrawlerDBContext crawlerDBContext)
+        public RepositoryQueuedHostedService(IRepositoryQueue repositoryQueue, ILogger<RepositoryQueuedHostedService> logger, IRepository repository)
         {
             RepositoryQueue = repositoryQueue;
             _logger = logger;
-            _crawlerDBContext = crawlerDBContext;
+            _repository = repository;
         }
 
         public IRepositoryQueue RepositoryQueue { get; }
@@ -38,7 +38,7 @@ namespace ZeroBrowser.Crawler.Api.HostedService
                 try
                 {
                     //Save in repo
-                    await _crawlerDBContext.CrawledRecords.AddAsync(new CrawledRecord { });
+                    await _repository.AddPage(context);
                 }
                 catch (Exception ex)
                 {

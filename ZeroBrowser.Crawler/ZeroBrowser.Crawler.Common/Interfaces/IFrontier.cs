@@ -8,6 +8,6 @@ namespace ZeroBrowser.Crawler.Common.Interfaces
 {
     public interface IFrontier
     {
-        Task Process(CrawlerContext crawlerContext);
+        Task<bool> Process(CrawlerContext crawlerContext);
     }
 }

@@ -47,13 +47,7 @@ namespace ZeroBrowser.Crawler.Core
         public DbSet<CrawledRecord> CrawledRecords { get; set; }
         public DbSet<CrawledRecordRelation> CrawledRecordRelations { get; set; }
 
-        public enum CrawlStatus
-        {
-            Pending,
-            Processing,
-            Processed
-        }
-
+       
         public enum HealthStatus
         {
             Pending,
@@ -69,9 +63,7 @@ namespace ZeroBrowser.Crawler.Core
             public string Url { get; set; }
 
             public string HashedUrl { get; set; }
-
-            public CrawlStatus CrawlStatus { get; set; }
-
+            
             public HealthStatus HealthStatus { get; set; }
 
             public HttpStatusCode? HttpStatusCode { get; set; }

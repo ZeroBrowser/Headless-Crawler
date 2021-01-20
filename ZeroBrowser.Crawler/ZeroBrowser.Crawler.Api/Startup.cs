@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +11,7 @@ using ZeroBrowser.Crawler.Common.Channels;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
 using ZeroBrowser.Crawler.Common.Queues;
+using ZeroBrowser.Crawler.Core;
 using ZeroBrowser.Crawler.Frontier;
 using ZeroBrowser.Crawler.Puppeteer;
 
@@ -39,17 +41,17 @@ namespace ZeroBrowser.Crawler.Api
         {
             // Add framework services.            
             //services.AddDbContextPool<CrawlerContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            //services.AddDbContext<CrawlerContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient, ServiceLifetime.Transient);
+            services.AddDbContext<CrawlerDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient, ServiceLifetime.Transient);
 
             //services.AddHealthChecks().AddDbContextCheck<CrawlerContext>();
 
-            //services.AddScoped<ICrawler, Core.Crawler>();
+            services.AddSingleton<ICrawler, Core.Crawler>();
             services.AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>();
             services.AddSingleton<IBackgroundUrlQueue, BackgroundUrlQueue>();
             services.AddSingleton<FrontierState>();
 
             //services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-            //services.AddTransient<IRepository, SQLiteRepository>();
+            services.AddSingleton<IRepository, SQLiteRepository>();
 
             services.AddSingleton<IManageHeadlessBrowser, ManageHeadlessBrowser>();
             services.AddSingleton<IUrlChannel, UrlChannel>();

@@ -33,7 +33,7 @@ namespace ZeroBrowser.Crawler.Core
         }
 
 
-        public async Task Crawl(CrawlerContext crawlerContext)
+        public async Task Crawl(CrawlerContext crawlerContext, int index)
         {
             var url = crawlerContext.CurrentUrl;
 
@@ -44,7 +44,7 @@ namespace ZeroBrowser.Crawler.Core
 
             Task.Delay(_crawlerOptions.PolitenessDelay).Wait();
 
-            var urls = await _headlessBrowserService.GetUrls(url, 0);
+            var urls = await _headlessBrowserService.GetUrls(url, index);
 
             if (urls == null)
                 return;

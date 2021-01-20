@@ -37,8 +37,8 @@ namespace ZeroBrowser.Crawler.Api.HostedService
 
                 try
                 {
-                    await _frontier.Process(context);
-                    _repositoryQueue.QueueUrlItem(context);
+                    if (await _frontier.Process(context))
+                        _repositoryQueue.QueueUrlItem(context);
                 }
                 catch (Exception ex)
                 {

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ZeroBrowser.Crawler.Common.Interfaces;
+using ZeroBrowser.Crawler.Common.Models;
 using static ZeroBrowser.Crawler.Core.CrawlerDBContext;
 
 namespace ZeroBrowser.Crawler.Core
@@ -23,26 +24,24 @@ namespace ZeroBrowser.Crawler.Core
             _logger = logger;
         }
 
-        public async Task AddPages(string parentUrl, List<string> pagesToCrawl)
+        public async Task AddPage(CrawlerContext crawlerContext)
         {
             using (var _crawlerContext = new CrawlerDBContext())
             {
                 _logger.LogInformation($"CrawlerContext HashCode : {_crawlerContext.GetHashCode()}");
 
-                var parent = !string.IsNullOrEmpty(parentUrl) ? await GetCrawledRecord<CrawledRecord>(cr => cr.HashedUrl == parentUrl.CreateMD5()) : null;
-
-                var crawledRecords = pagesToCrawl.Select(p => createCrawledRecord(p));
+                var parent = !string.IsNullOrEmpty(crawlerContext.ParentUrl) ? await GetCrawledRecord<CrawledRecord>(cr => cr.HashedUrl == crawlerContext.ParentUrl.CreateMD5()) : null;
 
                 if (parent != null)
                 {
-                    foreach (var record in crawledRecords)
-                    {
-                        //add the record itself
-                        await _crawlerContext.CrawledRecords.AddAsync(record);
+                    var record = createCrawledRecord(crawlerContext);
 
-                        //add relationship
-                        await _crawlerContext.CrawledRecordRelations.AddAsync(new CrawledRecordRelation { Parent = parent, ParentId = parent.Id, Child = record, ChildId = record.Id });
-                    }
+                    //add the record itself
+                    await _crawlerContext.CrawledRecords.AddAsync(record);
+
+                    //add relationship
+                    await _crawlerContext.CrawledRecordRelations.AddAsync(new CrawledRecordRelation { Parent = parent, ParentId = parent.Id, Child = record, ChildId = record.Id });
+
                 }
 
                 await _crawlerContext.SaveChangesAsync();
@@ -102,8 +101,22 @@ namespace ZeroBrowser.Crawler.Core
             var crawledRecord = new CrawledRecord
             {
                 Url = url,
-                CrawlStatus = CrawlStatus.Pending,
                 HashedUrl = url.CreateMD5(),
+                HealthStatus = HealthStatus.Pending,
+                HttpStatusCode = default,
+                Inserted = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            };
+
+            return crawledRecord;
+        }
+
+        private CrawledRecord createCrawledRecord(CrawlerContext crawlerContext)
+        {
+            var crawledRecord = new CrawledRecord
+            {
+                Url = crawlerContext.CurrentUrl,
+                HashedUrl = crawlerContext.CurrentUrl.CreateMD5(),
                 HealthStatus = HealthStatus.Pending,
                 HttpStatusCode = default,
                 Inserted = DateTime.UtcNow,

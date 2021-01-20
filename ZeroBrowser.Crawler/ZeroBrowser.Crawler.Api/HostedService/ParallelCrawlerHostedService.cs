@@ -52,7 +52,7 @@ namespace ZeroBrowser.Crawler.Api.HostedService
                     {
                         await foreach (var crawlerContext in await _urlChannel.Read())
                         {
-                            await _crawler.Crawl(crawlerContext);
+                            await _crawler.Crawl(crawlerContext, i);
                         }
 
                     }, _tokenSource.Token);
