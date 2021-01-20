@@ -26,8 +26,10 @@ namespace ZeroBrowser.Crawler.Core
 
         public async Task AddPage(CrawlerContext crawlerContext)
         {
-
             _logger.LogInformation($"CrawlerContext HashCode : {_crawlerContext.GetHashCode()}");
+
+            if (await Exist(crawlerContext.CurrentUrl))
+                return;
 
             var parent = !string.IsNullOrEmpty(crawlerContext.ParentUrl) ? await GetCrawledRecord<CrawledRecord>(cr => cr.HashedUrl == crawlerContext.ParentUrl.CreateMD5()) : null;
 

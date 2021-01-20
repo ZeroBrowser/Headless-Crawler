@@ -263,3 +263,5 @@ src/Dictionary\.Website/website_log\.txt
 
 # SQlite DB
 *.db
+*.db-wal
+*.db-shm

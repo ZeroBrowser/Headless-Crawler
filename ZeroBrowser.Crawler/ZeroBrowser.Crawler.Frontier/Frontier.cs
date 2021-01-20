@@ -10,7 +10,7 @@ using ZeroBrowser.Crawler.Common.Models;
 namespace ZeroBrowser.Crawler.Frontier
 {
     public class Frontier : IFrontier
-    {        
+    {
         private readonly IUrlChannel _urlChannel;
         private readonly ILogger<Frontier> _logger;
         private FrontierState _frontierState;
@@ -37,26 +37,42 @@ namespace ZeroBrowser.Crawler.Frontier
             if (url == null)
                 return false;
 
-            if (_frontierState.CrawledUrls.ContainsKey(url))
+            if (Uri.TryCreate(url, UriKind.Absolute, out Uri result))
             {
-                //stop
+                url = cleanUrl(url, result);
 
-                _logger.LogInformation($"**** existing url: {url}{Environment.NewLine}");
+                if (_frontierState.CrawledUrls.ContainsKey(url))
+                {
+                    //stop
 
-                _frontierState.CrawledUrls[url]++;
+                    _logger.LogInformation($"**** existing url: {url}{Environment.NewLine}");
 
-                return false;
+                    _frontierState.CrawledUrls[url]++;
+                }
+                else
+                {
+                    //add to queue
+                    _logger.LogInformation($"**** new url: {url}{Environment.NewLine}");
+
+                    _frontierState.CrawledUrls.TryAdd(url, 1);
+                    await _urlChannel.Insert(crawlerContext);
+
+                    return true;
+                }
             }
-            else
-            {
-                //add to queue
-                _logger.LogInformation($"**** new url: {url}{Environment.NewLine}");
 
-                _frontierState.CrawledUrls.TryAdd(url, 1);
-                await _urlChannel.Insert(crawlerContext);
+            return false;
+        }
 
-                return true;
-            }
+        private string cleanUrl(string url, Uri uri)
+        {
+            //clean up and remove fragments 
+            url = url.Remove(url.Length - uri.Fragment.Length, uri.Fragment.Length);
+
+            if (url.EndsWith("/"))
+                url = url.Remove(url.Length - 1, 1);
+
+            return url;
         }
     }
 }
