@@ -1,5 +1,4 @@
 # 0Browser crawler
 
-[![Build Status](https://travis-ci.org/ZeroBrowser/0browser-crawler.svg?branch=master)](https://travis-ci.org/ZeroBrowser/0browser-crawler)
+![GitHub](https://img.shields.io/github/license/zerobrowser/0browser-crawler?style=flat-square)
 
-Swiss Army Knife crawler that uses Headless Browser and is also Cloud ready
