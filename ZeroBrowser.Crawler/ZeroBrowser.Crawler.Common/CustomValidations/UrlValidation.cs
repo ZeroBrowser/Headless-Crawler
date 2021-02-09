@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace ZeroBrowser.Crawler.Core.CustomValidations
+namespace ZeroBrowser.Crawler.Common.CustomValidations
 {
     public class UrlValidation : ValidationAttribute
     {
@@ -17,6 +17,9 @@ namespace ZeroBrowser.Crawler.Core.CustomValidations
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var membersName = new[] { validationContext.MemberName };
+
+            if (value == null)
+                return new ValidationResult("Null", membersName);
 
             if (value.GetType().IsArray)
             {

@@ -1,37 +1,71 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using ZeroBrowser.Crawler.Api.HostedService;
+using ZeroBrowser.Crawler.Common.Channels;
+using ZeroBrowser.Crawler.Common.Interfaces;
+using ZeroBrowser.Crawler.Common.Models;
+using ZeroBrowser.Crawler.Common.Queues;
+using ZeroBrowser.Crawler.Core;
+using ZeroBrowser.Crawler.Frontier;
+using ZeroBrowser.Crawler.Puppeteer;
 
 namespace ZeroBrowser.Crawler.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _hostingEnvironment;
+
+        public Startup(IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            _hostingEnvironment = env;
+
+            var builder = new ConfigurationBuilder()
+               .SetBasePath(env.ContentRootPath)
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+               .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+               .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddHostedService<>();
+            // Add framework services.            
+            services.AddDbContext<CrawlerDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
+
+            services.AddSingleton<ICrawler, Core.Crawler>();
+            services.AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>();
+            services.AddSingleton<IBackgroundUrlQueue, BackgroundUrlQueue>();
+            services.AddSingleton<FrontierState>();
+            services.AddSingleton<IRepositoryQueue, RepositoryQueue>();
+            services.AddSingleton<IRepository, SQLiteRepository>();
+            services.AddSingleton<IManageHeadlessBrowser, ManageHeadlessBrowser>();
+            services.AddSingleton<IUrlChannel, UrlChannel>();
+            services.AddSingleton<IFrontier, Frontier.Frontier>();
+            
+            services.AddHostedService<FrontierUrlQueuedHostedService>();
+            services.AddHostedService<ParallelCrawlerHostedService>();
+            services.AddHostedService<RepositoryQueuedHostedService>();
+            
+            services.Configure<CrawlerOptions>(Configuration.GetSection(CrawlerOptions.Section));
+
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ZeroBrowser.Crawler.Api", Version = "v1" });
             });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +87,17 @@ namespace ZeroBrowser.Crawler.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseExceptionHandler(errorApp =>
+            {
+                errorApp.Run(async context =>
+                {
+
+                    var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+
+
+                });
             });
         }
     }

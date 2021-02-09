@@ -1,56 +1,79 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
-using ZeroBrowser.Crawler.Core.Interfaces;
-using ZeroBrowser.Crawler.Core.Models;
 
 namespace ZeroBrowser.Crawler.Core
 {
     public class Crawler : ICrawler
     {
-        private readonly string[] _seedUrls;
-        private readonly string _headlessBrowserUrl;
-        private readonly Parameters _parameters;
+        private readonly ILogger<Crawler> _logger;
         private readonly IHeadlessBrowserService _headlessBrowserService;
+        private static string seedHostName = string.Empty;
+        private readonly IBackgroundUrlQueue _backgroundUrlQueue;
+        private readonly CrawlerOptions _crawlerOptions;
+        private readonly IRepository _repository;
+        private List<string> _blackList = new List<string> { "ws", "mailto" };
 
-        public Crawler(string[] seedUrls, string headlessBrowserUrl, IHeadlessBrowserService headlessBrowserService)
+        public Crawler(ILogger<Crawler> logger,
+                       IHeadlessBrowserService headlessBrowserService,
+                       IOptions<CrawlerOptions> crawlerOptions,
+                       IRepository repository,
+                       IBackgroundUrlQueue backgroundUrlQueue)
         {
-            _seedUrls = seedUrls;
-            _headlessBrowserUrl = headlessBrowserUrl;
+            _logger = logger;
             _headlessBrowserService = headlessBrowserService;
-            _parameters = new Parameters(_seedUrls, _headlessBrowserUrl);
+            _crawlerOptions = crawlerOptions.Value;
+            _repository = repository;
+            _backgroundUrlQueue = backgroundUrlQueue;
         }
 
 
-        public async Task<IAsyncEnumerable<WebPage>> Crawl()
+        public async Task Crawl(CrawlerContext crawlerContext, int index)
         {
-            ValidateArgument();
+            var url = crawlerContext.CurrentUrl;
 
-            //1. lets get page information.
+            //very first time lets populate the seed host name and cache it (static)
+            //TODO need to set this once somehow.
+            if (crawlerContext.IsSeed)
+                seedHostName = new Uri(url).Host.Replace("www.", string.Empty);
 
-            //_headlessBrowserService.
+            Task.Delay(_crawlerOptions.PolitenessDelay).Wait();
 
-            return null;
-        }
+            var urls = await _headlessBrowserService.GetUrls(url, index);
 
+            if (urls == null)
+                return;
 
-        private void ValidateArgument()
-        {
-            //Validate _seedUrls
-            var errorResults = new List<ValidationResult>();
-            var context = new ValidationContext(_parameters, serviceProvider: null, items: null);
-            if (!Validator.TryValidateObject(_parameters, context, errorResults, true))
+            foreach (var newUrl in urls)
             {
-                var firstError = errorResults.FirstOrDefault();
+                _logger.LogInformation($"***** new url found {url}.{Environment.NewLine}");
 
-                if (firstError != null)
-                    throw new ArgumentException(firstError.ErrorMessage, firstError.MemberNames.First());
+                if (!isUrlAllowed(newUrl.Url))
+                    continue;
+
+                _backgroundUrlQueue.QueueUrlItem(newUrl.Url);
             }
         }
 
+        private bool isUrlAllowed(string url)
+        {
+            //lets not crawl if the site is outside seed url (main site)
+            if (!url.Contains(seedHostName))
+                return false;
+
+            //lets remove not so intresting protocls
+            if (_blackList.Any(badKeyWord => url.Substring(0, badKeyWord.Length) == badKeyWord))
+                return false;
+
+
+
+
+            return true;
+        }
     }
 }

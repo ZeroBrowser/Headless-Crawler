@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroBrowser.Crawler.Core", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroBrowser.Crawler.Test", "ZeroBrowser.Crawler.Test\ZeroBrowser.Crawler.Test.csproj", "{1C046CAA-9E0D-4B51-8200-F2C80ED8FA9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroBrowser.Crawler.Puppeteer", "ZeroBrowser.Crawler.Puppeteer\ZeroBrowser.Crawler.Puppeteer.csproj", "{48449359-C59B-4F67-9795-E152A767644B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroBrowser.Crawler.Puppeteer", "ZeroBrowser.Crawler.Puppeteer\ZeroBrowser.Crawler.Puppeteer.csproj", "{48449359-C59B-4F67-9795-E152A767644B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroBrowser.Crawler.Common", "ZeroBrowser.Crawler.Common\ZeroBrowser.Crawler.Common.csproj", "{3A1948A0-7594-4276-8846-1FE948628704}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroBrowser.Crawler.Common", "ZeroBrowser.Crawler.Common\ZeroBrowser.Crawler.Common.csproj", "{3A1948A0-7594-4276-8846-1FE948628704}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroBrowser.Crawler.Frontier", "ZeroBrowser.Crawler.Frontier\ZeroBrowser.Crawler.Frontier.csproj", "{1725CB25-2FB7-4A80-92BC-A8A6BF84917B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{3A1948A0-7594-4276-8846-1FE948628704}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A1948A0-7594-4276-8846-1FE948628704}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A1948A0-7594-4276-8846-1FE948628704}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1725CB25-2FB7-4A80-92BC-A8A6BF84917B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1725CB25-2FB7-4A80-92BC-A8A6BF84917B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1725CB25-2FB7-4A80-92BC-A8A6BF84917B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1725CB25-2FB7-4A80-92BC-A8A6BF84917B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

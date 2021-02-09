@@ -6,6 +6,6 @@ namespace ZeroBrowser.Crawler.Common.Models
 {
     public class WebPage
     {
-        public Uri URL { get; set; }
+        public string Url { get; set; }
     }
 }

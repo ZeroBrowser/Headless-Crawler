@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Models;
 
 namespace ZeroBrowser.Crawler.Common.Interfaces
 {
-    public interface IHeadlessBrowserService
+    public interface IRepositoryQueue
     {
-        Task<IEnumerable<WebPage>> GetUrls(string url, int jobIndex);
+        void QueueUrlItem(CrawlerContext crawlerContext);
 
-        Task<HttpStatusCode> HealthCheck(string url, int jobIndex);
+        Task<CrawlerContext> DequeueAsync();
     }
 }
