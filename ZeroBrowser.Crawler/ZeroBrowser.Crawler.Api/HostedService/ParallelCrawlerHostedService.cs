@@ -45,6 +45,7 @@ namespace ZeroBrowser.Crawler.Api.HostedService
 
             _tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
+            var crawlerIndex = 0;
             for (var i = 0; i < _executorsCount; i++)
             {
                 var executorTask = new Task(
@@ -52,7 +53,11 @@ namespace ZeroBrowser.Crawler.Api.HostedService
                     {
                         await foreach (var crawlerContext in await _urlChannel.Read())
                         {
-                            await _crawler.Crawl(crawlerContext, i);
+                            if (crawlerIndex > _executorsCount)
+                                crawlerIndex = 0;
+
+                            await _crawler.Crawl(crawlerContext, crawlerIndex);
+                            crawlerIndex++;
                         }
 
                     }, _tokenSource.Token);

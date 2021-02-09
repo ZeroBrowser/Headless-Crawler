@@ -71,7 +71,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
         {
             if (_browser == null || _browser.IsClosed)
                 await Init();
-      
+
             //lets try a couple of times
             var delay = Backoff.ConstantBackoff(TimeSpan.FromMilliseconds(1000), retryCount: 5);
 
@@ -92,7 +92,12 @@ namespace ZeroBrowser.Crawler.Puppeteer
                     //lets inject jquery url to any page so we can use it in our queries
                     await page.AddScriptTagAsync(_crawlerOptions.JQueryUrl);
 
-                    if (BrowserLookup.TryAdd(index, page))
+                    if (!BrowserLookup.ContainsKey(index))
+                    {
+                        if (BrowserLookup.TryAdd(index, page))
+                            return page as T;
+                    }
+                    else if (BrowserLookup.TryUpdate(index, page, null))
                         return page as T;
                 }
                 return page as T;
@@ -104,7 +109,7 @@ namespace ZeroBrowser.Crawler.Puppeteer
         public async Task ClosePage(int index)
         {
             BrowserLookup.TryGetValue(index, out Page page);
-            if (page == null)
+            if (page != null)
             {
                 await page.CloseAsync();
                 BrowserLookup.TryUpdate(index, null, page);
