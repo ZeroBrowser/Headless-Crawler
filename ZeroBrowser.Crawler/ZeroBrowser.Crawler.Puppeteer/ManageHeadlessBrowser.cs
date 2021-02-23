@@ -89,9 +89,6 @@ namespace ZeroBrowser.Crawler.Puppeteer
                 {
                     page = await _browser.NewPageAsync();
 
-                    //lets inject jquery url to any page so we can use it in our queries
-                    await page.AddScriptTagAsync(_crawlerOptions.JQueryUrl);
-
                     if (!BrowserLookup.ContainsKey(index))
                     {
                         if (BrowserLookup.TryAdd(index, page))

@@ -58,19 +58,14 @@ namespace ZeroBrowser.Crawler.Puppeteer
         {
             var page = await gotoUrl(url, jobIndex);
 
-            var jquerySelector = "$('a[href]')";
-
-            var element = await page.EvaluateFunctionAsync(@"(jquerySelector) => {
-                    const $ = window.$;
-                    var links = eval(jquerySelector).toArray();
-
-                    var urls = [];
-                    $(links).each(function() {
-                       urls.push( this.href ); 
-                    });
+            var element = await page.EvaluateFunctionAsync(@"() => {                   
+                    var urls = Array.from(
+                        document.querySelectorAll('a[href]'),
+                        a => a.getAttribute('href')
+                      );
 
                     return JSON.stringify(urls);
-                }", jquerySelector);
+                }");
 
             await _manageHeadlessBrowser.ClosePage(jobIndex);
 
