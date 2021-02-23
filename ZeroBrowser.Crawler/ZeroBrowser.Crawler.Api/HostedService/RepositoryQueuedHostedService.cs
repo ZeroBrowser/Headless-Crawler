@@ -3,7 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using ZeroBrowser.Crawler.Common.Interfaces;
+using ZeroBrowser.Crawler.Common.Models;
 
 namespace ZeroBrowser.Crawler.Api.HostedService
 {
@@ -11,18 +13,26 @@ namespace ZeroBrowser.Crawler.Api.HostedService
     {
         private readonly ILogger<RepositoryQueuedHostedService> _logger;
         private readonly IRepository _repository;
+        private readonly CrawlerOptions _crawlerOptions;
 
-        public RepositoryQueuedHostedService(IRepositoryQueue repositoryQueue, ILogger<RepositoryQueuedHostedService> logger, IRepository repository)
+        public RepositoryQueuedHostedService(IRepositoryQueue repositoryQueue,
+                                             ILogger<RepositoryQueuedHostedService> logger,
+                                             IRepository repository,
+                                             IOptions<CrawlerOptions> crawlerOptions)
         {
             RepositoryQueue = repositoryQueue;
             _logger = logger;
             _repository = repository;
+            _crawlerOptions = crawlerOptions.Value;
         }
 
         public IRepositoryQueue RepositoryQueue { get; }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {            
+        {
+            if (_crawlerOptions.DisableDB)
+                return;
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 var context = await RepositoryQueue.DequeueAsync();

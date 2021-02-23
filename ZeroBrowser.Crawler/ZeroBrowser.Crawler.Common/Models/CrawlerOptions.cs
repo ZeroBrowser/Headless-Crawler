@@ -32,5 +32,7 @@ namespace ZeroBrowser.Crawler.Common.Models
         public string SeedUrl { get; set; }
 
         public int PolitenessDelay { get; set; }
+
+        public bool DisableDB { get; set; }
     }
 }

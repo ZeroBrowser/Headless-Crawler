@@ -48,7 +48,7 @@ namespace ZeroBrowser.Crawler.Core
 
             foreach (var newUrl in urls)
             {
-                _logger.LogInformation($"***** new URL found {url}.{Environment.NewLine}");
+                _logger.LogInformation($"***** new URL found {newUrl}.{Environment.NewLine}");
 
                 if (!isUrlAllowed(newUrl.Url))
                     continue;
