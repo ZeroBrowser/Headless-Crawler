@@ -56,7 +56,7 @@ namespace ZeroBrowser.Crawler.Core
                 if (!isUrlAllowed(newUrl.Url))
                     continue;
 
-                _backgroundUrlQueue.QueueUrlItem(newUrl.Url);
+                _backgroundUrlQueue.EnqueteUrlItem(newUrl.Url);
             }
         }
 

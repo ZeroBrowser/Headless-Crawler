@@ -20,7 +20,7 @@ namespace ZeroBrowser.Crawler.Common.Queues
             _logger = logger;
         }
 
-        public void QueueUrlItem(string url, bool isSeed = false)
+        public void EnqueteUrlItem(string url, bool isSeed = false)
         {
             if (url == null)
             {
