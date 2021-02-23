@@ -29,8 +29,6 @@ namespace ZeroBrowser.Crawler.Common.Queues
 
             _crawlerContext = new CrawlerContext() { CurrentUrl = url, ParentUrl = url, IsSeed = isSeed };
 
-            _logger.LogInformation($"** Enqueue {url}{Environment.NewLine}");
-
             _workItems.Enqueue(_crawlerContext);
             _signal.Release();
         }
@@ -40,8 +38,6 @@ namespace ZeroBrowser.Crawler.Common.Queues
             await _signal.WaitAsync();
 
             _workItems.TryDequeue(out var crawlerContext);
-
-            _logger.LogInformation($"** Dequeue {crawlerContext.CurrentUrl}{Environment.NewLine}");
 
             return crawlerContext;
         }

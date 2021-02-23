@@ -15,9 +15,6 @@ namespace ZeroBrowser.Crawler.Api.HostedService
         private readonly int _executorsCount;
         private readonly Task[] _executors;
         private IUrlChannel _urlChannel;
-        private readonly IHeadlessBrowserService _headlessBrowserService;
-        private readonly IBackgroundUrlQueue _backgroundUrlQueue;
-        private static string seedHostName = string.Empty;
         private CrawlerOptions _crawlerOptions;
         private CancellationTokenSource _tokenSource;
         private readonly ICrawler _crawler;
@@ -25,15 +22,11 @@ namespace ZeroBrowser.Crawler.Api.HostedService
         public ParallelCrawlerHostedService(IUrlChannel urlChannel,
                                             ILoggerFactory loggerFactory,
                                             IOptions<CrawlerOptions> crawlerOptions,
-                                            IHeadlessBrowserService headlessBrowserService,
-                                            IBackgroundUrlQueue backgroundUrlQueue,
                                             ICrawler crawler)
         {
             _crawlerOptions = crawlerOptions.Value;
             _urlChannel = urlChannel;
             _logger = loggerFactory.CreateLogger<ParallelCrawlerHostedService>();
-            _headlessBrowserService = headlessBrowserService;
-            _backgroundUrlQueue = backgroundUrlQueue;
             _executorsCount = _crawlerOptions.NumberOfParallelInstances;
             _executors = new Task[_executorsCount];
             _crawler = crawler;
@@ -41,8 +34,6 @@ namespace ZeroBrowser.Crawler.Api.HostedService
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"***** entered consumer.{Environment.NewLine}");
-
             _tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
             var crawlerIndex = 0;

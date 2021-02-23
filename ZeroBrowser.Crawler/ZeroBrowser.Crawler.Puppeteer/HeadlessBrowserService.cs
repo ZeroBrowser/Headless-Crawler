@@ -56,8 +56,6 @@ namespace ZeroBrowser.Crawler.Puppeteer
 
         private async Task<IEnumerable<WebPage>> getWebPage(string url, int jobIndex)
         {
-            _logger.LogInformation($"****** headless browser service recieved new url ${url}.{Environment.NewLine}");
-
             var page = await gotoUrl(url, jobIndex);
 
             var jquerySelector = "$('a[href]')";

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ZeroBrowser.Crawler.Common.Interfaces;
-using ZeroBrowser.Crawler.Core;
-using static ZeroBrowser.Crawler.Core.CrawlerDBContext;
 
 namespace ZeroBrowser.Crawler.Api.HostedService
 {
@@ -26,9 +22,7 @@ namespace ZeroBrowser.Crawler.Api.HostedService
         public IRepositoryQueue RepositoryQueue { get; }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            _logger.LogInformation($"*** ExecuteAsync.{Environment.NewLine}");
-
+        {            
             while (!stoppingToken.IsCancellationRequested)
             {
                 var context = await RepositoryQueue.DequeueAsync();

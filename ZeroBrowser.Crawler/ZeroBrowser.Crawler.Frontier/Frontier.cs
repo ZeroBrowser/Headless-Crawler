@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
@@ -23,10 +20,10 @@ namespace ZeroBrowser.Crawler.Frontier
         }
 
         /// <summary>
-        /// It does what a Frontier does, add url to queue for crawling
+        /// It does what a Frontier does, add URL to queue for crawling
         /// </summary>
         /// <param name="crawlerContext">context</param>
-        /// <returns>true if new url found, false if existing</returns>
+        /// <returns>true if new URL found, false if existing</returns>
         public async Task<bool> Process(CrawlerContext crawlerContext)
         {
             if (crawlerContext.IsSeed)
@@ -43,16 +40,13 @@ namespace ZeroBrowser.Crawler.Frontier
 
                 if (_frontierState.CrawledUrls.ContainsKey(url))
                 {
-                    //stop
-
-                    _logger.LogInformation($"**** existing url: {url}{Environment.NewLine}");
-
+                    //existing URL
                     _frontierState.CrawledUrls[url]++;
                 }
                 else
                 {
                     //add to queue
-                    _logger.LogInformation($"**** new url: {url}{Environment.NewLine}");
+                    _logger.LogInformation($"New URL: {url}{Environment.NewLine}");
 
                     _frontierState.CrawledUrls.TryAdd(url, 1);
                     await _urlChannel.Insert(crawlerContext);
