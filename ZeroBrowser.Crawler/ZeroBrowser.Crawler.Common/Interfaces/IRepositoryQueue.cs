@@ -7,9 +7,10 @@ using ZeroBrowser.Crawler.Common.Models;
 
 namespace ZeroBrowser.Crawler.Common.Interfaces
 {
-    public interface IBackgroundUrlQueue
+    public interface IRepositoryQueue
     {
-        void EnqueteUrlItem(string url, bool isSeed = false);
+
+        void QueueUrlItem(CrawlerContext crawlerContext);
 
         Task<CrawlerContext> DequeueAsync();
     }
