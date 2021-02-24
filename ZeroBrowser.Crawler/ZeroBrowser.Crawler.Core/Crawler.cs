@@ -59,6 +59,10 @@ namespace ZeroBrowser.Crawler.Core
 
         private bool isUrlAllowed(string url)
         {
+            //local url if starts with ./
+            if (url.StartsWith("./"))
+                url = url.Replace("./", seedHostName);
+
             //lets not crawl if the site is outside seed URL (main site)
             if (!url.Contains(seedHostName))
                 return false;
