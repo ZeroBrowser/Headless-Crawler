@@ -7,6 +7,8 @@ namespace ZeroBrowser.Crawler.Frontier
 {
     public class FrontierState
     {
+        public Uri SeedUri { get; set; }
+
         //key is URL and value is number of times this URL is pass in to Frontier
         public ConcurrentDictionary<string, int> CrawledUrls { get; private set; }
 

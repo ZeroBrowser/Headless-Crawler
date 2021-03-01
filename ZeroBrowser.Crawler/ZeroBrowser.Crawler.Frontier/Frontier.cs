@@ -26,9 +26,6 @@ namespace ZeroBrowser.Crawler.Frontier
         /// <returns>true if new URL found, false if existing</returns>
         public async Task<bool> Process(CrawlerContext crawlerContext)
         {
-            if (crawlerContext.IsSeed)
-                _frontierState.Reset();
-
             var url = crawlerContext.CurrentUrl;
 
             if (url == null)
@@ -36,8 +33,12 @@ namespace ZeroBrowser.Crawler.Frontier
 
             if (Uri.TryCreate(url, UriKind.Absolute, out Uri result))
             {
-                url = cleanUrl(url, result);
-
+                if (crawlerContext.IsSeed)
+                {
+                    _frontierState.Reset();
+                    _frontierState.SeedUri = result;
+                }
+              
                 if (_frontierState.CrawledUrls.ContainsKey(url))
                 {
                     //existing URL
@@ -56,17 +57,6 @@ namespace ZeroBrowser.Crawler.Frontier
             }
 
             return false;
-        }
-
-        private string cleanUrl(string url, Uri uri)
-        {
-            //clean up and remove fragments 
-            url = url.Remove(url.Length - uri.Fragment.Length, uri.Fragment.Length);
-
-            if (url.EndsWith("/"))
-                url = url.Remove(url.Length - 1, 1);
-
-            return url;
         }
     }
 }

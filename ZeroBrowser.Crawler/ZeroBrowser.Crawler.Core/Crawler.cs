@@ -14,6 +14,7 @@ namespace ZeroBrowser.Crawler.Core
         private readonly ILogger<Crawler> _logger;
         private readonly IHeadlessBrowserService _headlessBrowserService;
         private static string seedHostName = string.Empty;
+        private static Uri seedUri;
         private readonly IBackgroundUrlQueue _backgroundUrlQueue;
         private readonly CrawlerOptions _crawlerOptions;
         private List<string> _blackList = new List<string> { "ws", "mailto" };
@@ -37,7 +38,10 @@ namespace ZeroBrowser.Crawler.Core
             //very first time lets populate the seed host name and cache it (static)
             //TODO need to set this once somehow.
             if (crawlerContext.IsSeed)
-                seedHostName = new Uri(url).Host.Replace("www.", string.Empty);
+            {
+                seedUri = new Uri(url);
+                seedHostName = seedUri.Host.Replace("www.", string.Empty);
+            }
 
             await Task.Delay(_crawlerOptions.PolitenessDelay);
 
@@ -50,19 +54,42 @@ namespace ZeroBrowser.Crawler.Core
             {
                 _logger.LogInformation($"***** new URL found {newUrl}.{Environment.NewLine}");
 
-                if (!isUrlAllowed(newUrl.Url))
+                var cleanedUrl = cleanUrl(newUrl.Url);
+
+                if (!isUrlAllowed(cleanedUrl))
                     continue;
 
-                _backgroundUrlQueue.EnqueteUrlItem(newUrl.Url);
+                _backgroundUrlQueue.EnqueteUrlItem(cleanedUrl);
             }
+        }
+
+        private string cleanUrl(string url)
+        {
+            //clean up and remove fragments 
+            url = url.Remove(url.Length - seedUri.Fragment.Length, seedUri.Fragment.Length);
+
+            if (url.EndsWith("/"))
+                url = url.Remove(url.Length - 1, 1);
+
+            //local url if starts with ./
+            if (url.StartsWith("./"))
+            {
+                url = $"{seedUri.Scheme}://{seedHostName}{url.Substring(1, url.Length - 1)}";
+            }
+            else if (url.StartsWith("/"))
+            {
+                url = $"{seedUri.Scheme}://{seedHostName}{url}";
+            }
+            else
+            {
+
+            }
+
+            return url;
         }
 
         private bool isUrlAllowed(string url)
         {
-            //local url if starts with ./
-            if (url.StartsWith("./"))
-                url = url.Replace("./", seedHostName);
-
             //lets not crawl if the site is outside seed URL (main site)
             if (!url.Contains(seedHostName))
                 return false;
