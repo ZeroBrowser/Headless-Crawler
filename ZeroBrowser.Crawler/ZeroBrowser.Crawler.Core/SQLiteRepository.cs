@@ -37,8 +37,7 @@ namespace ZeroBrowser.Crawler.Core
             var record = createCrawledRecord(crawlerContext);
 
             //add the record itself
-            await _crawlerContext.CrawledRecords.AddAsync(record);
-
+            _crawlerContext.CrawledRecords.AddAsync(record);
 
             //add relationship
             if (parent != null)
