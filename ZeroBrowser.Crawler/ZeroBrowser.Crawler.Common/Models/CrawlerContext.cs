@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
+using ZeroBrowser.Crawler.Common.CustomValidations;
 
 namespace ZeroBrowser.Crawler.Common.Models
 {
@@ -11,5 +13,7 @@ namespace ZeroBrowser.Crawler.Common.Models
         public string ParentUrl { get; set; }
 
         public bool IsSeed { get; set; }
+
+        public int CurrentCrawlerIndex { get; set; }
     }
 }

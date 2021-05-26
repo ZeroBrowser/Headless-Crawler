@@ -2,8 +2,10 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using ZeroBrowser.Crawler.Common.CustomValidations;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
 
@@ -31,21 +33,24 @@ namespace ZeroBrowser.Crawler.Core
         }
 
 
-        public async Task Crawl(CrawlerContext crawlerContext, int index)
+        public async Task Crawl(CrawlerContext crawlerContext)
         {
             var url = crawlerContext.CurrentUrl;
+
+            //some basic validation on url
+            validateUrl(url);
 
             //very first time lets populate the seed host name and cache it (static)
             //TODO need to set this once somehow.
             if (crawlerContext.IsSeed)
             {
                 seedUri = new Uri(url);
-                seedHostName = seedUri.Host.Replace("www.", string.Empty);
+                seedHostName = cleanHostName(seedUri);
             }
 
             await Task.Delay(_crawlerOptions.PolitenessDelay);
 
-            var urls = await _headlessBrowserService.GetUrls(url, index);
+            var urls = await _headlessBrowserService.GetUrls(url, crawlerContext.CurrentCrawlerIndex);
 
             if (urls == null)
                 return;
@@ -61,6 +66,17 @@ namespace ZeroBrowser.Crawler.Core
 
                 _backgroundUrlQueue.EnqueteUrlItem(cleanedUrl);
             }
+        }
+
+        private void validateUrl(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new ArgumentException("Null/Empty");
+        }
+
+        private string cleanHostName(Uri uri)
+        {
+            return uri.Host.Replace("www.", string.Empty);
         }
 
         private string cleanUrl(string url)

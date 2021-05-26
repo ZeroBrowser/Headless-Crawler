@@ -8,6 +8,6 @@ namespace ZeroBrowser.Crawler.Common.Interfaces
 {
     public interface ICrawler
     {
-        Task Crawl(CrawlerContext crawlerContext, int index);
+        Task Crawl(CrawlerContext crawlerContext);
     }
 }

@@ -47,7 +47,9 @@ namespace ZeroBrowser.Crawler.Api.HostedService
                             if (crawlerIndex > _executorsCount)
                                 crawlerIndex = 0;
 
-                            await _crawler.Crawl(crawlerContext, crawlerIndex);
+                            crawlerContext.CurrentCrawlerIndex = crawlerIndex;
+
+                            await _crawler.Crawl(crawlerContext);
                             crawlerIndex++;
                         }
 
