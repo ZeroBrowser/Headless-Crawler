@@ -38,18 +38,18 @@ namespace ZeroBrowser.Crawler.Frontier
                     _frontierState.Reset();
                     _frontierState.SeedUri = result;
                 }
-              
+
                 if (_frontierState.CrawledUrls.ContainsKey(url))
                 {
                     //existing URL
-                    _frontierState.CrawledUrls[url]++;
+                    _frontierState.CrawledUrls[url].Total++;
                 }
                 else
                 {
                     //add to queue
                     _logger.LogInformation($"New URL: {url}{Environment.NewLine}");
 
-                    _frontierState.CrawledUrls.TryAdd(url, 1);
+                    _frontierState.CrawledUrls.TryAdd(url, new CrawledPageInfo { ParentUrl = crawlerContext.ParentUrl, Total = 1 });
                     await _urlChannel.Insert(crawlerContext);
 
                     return true;
