@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ZeroBrowser.Crawler.Common.Interfaces;
@@ -8,6 +9,7 @@ using ZeroBrowser.Crawler.Frontier;
 
 namespace ZeroBrowser.Crawler.Api.Controllers
 {
+    [Produces("application/json")]
     [ApiController]
     [Route("[controller]")]
     public class CrawlController : ControllerBase
@@ -32,7 +34,26 @@ namespace ZeroBrowser.Crawler.Api.Controllers
         }
 
 
+        /// <summary>
+        /// Start crawler
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /Todo
+        ///     {
+        ///         "seedUrls" : ["https://www.0browser.com"],
+        ///         "headlessBrowserUrl" : "wss://proxy.0browser.com?token="
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="item"></param>
+        /// <returns>A newly created TodoItem</returns>
+        /// <response code="200">Recieved the seed url without any issues</response>
+        /// <response code="500">Something wrong!</response>            
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Post([FromBody] Parameters parameter)
         {
             _logger.LogInformation($"* url recieved {parameter.SeedUrls.First()}{Environment.NewLine}");

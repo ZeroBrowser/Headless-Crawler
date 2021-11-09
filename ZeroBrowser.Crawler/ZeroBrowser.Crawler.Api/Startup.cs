@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System;
 using ZeroBrowser.Crawler.Api.HostedService;
 using ZeroBrowser.Crawler.Common.Channels;
 using ZeroBrowser.Crawler.Common.Interfaces;
@@ -51,18 +52,28 @@ namespace ZeroBrowser.Crawler.Api
             services.AddSingleton<IManageHeadlessBrowser, ManageHeadlessBrowser>();
             services.AddSingleton<IUrlChannel, UrlChannel>();
             services.AddSingleton<IFrontier, Frontier.Frontier>();
-            
+
             services.AddHostedService<FrontierUrlQueuedHostedService>();
             services.AddHostedService<ParallelCrawlerHostedService>();
             services.AddHostedService<RepositoryQueuedHostedService>();
-            
+
             services.Configure<CrawlerOptions>(Configuration.GetSection(CrawlerOptions.Section));
 
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ZeroBrowser.Crawler.Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "ZeroBrowser Headless Crawler",
+                    Version = "v1",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Raha Mohebbi",
+                        Email = string.Empty,
+                        Url = new Uri("https://twitter.com/rahabm"),
+                    }
+                });
             });
 
 
