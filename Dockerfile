@@ -6,10 +6,10 @@ EXPOSE 5010
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
-COPY ["/ZeroBrowser.Crawler.Api/ZeroBrowser.Crawler.Api.csproj", "ZeroBrowser.Crawler.Api/"]
+COPY ["ZeroBrowser.Crawler/ZeroBrowser.Crawler.Api/ZeroBrowser.Crawler.Api.csproj", "ZeroBrowser.Crawler.Api/"]
 RUN dotnet restore "ZeroBrowser.Crawler.Api/ZeroBrowser.Crawler.Api.csproj"
 COPY . .
-WORKDIR "/src/ZeroBrowser.Crawler.Api"
+WORKDIR "/src/ZeroBrowser.Crawler/ZeroBrowser.Crawler.Api"
 RUN dotnet build "ZeroBrowser.Crawler.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
