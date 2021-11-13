@@ -11,22 +11,30 @@ namespace ZeroBrowser.Crawler.Api.Controllers
 {
     [Produces("application/json")]
     [ApiController]
-    [Route("[controller]")]
-    public class CrawlController : ControllerBase
+    [Route("api/[controller]")]
+    public class CrawlerController : ControllerBase
     {
-        private readonly ILogger<CrawlController> _logger;
+        private readonly ILogger<CrawlerController> _logger;
         private readonly IBackgroundUrlQueue _backgroundUrlQueue;
         private readonly FrontierState _frontierState;
 
-        public CrawlController(ILogger<CrawlController> logger, IBackgroundUrlQueue backgroundUrlQueue, FrontierState frontierState)
+        public CrawlerController(ILogger<CrawlerController> logger, IBackgroundUrlQueue backgroundUrlQueue, FrontierState frontierState)
         {
             _logger = logger;
             _backgroundUrlQueue = backgroundUrlQueue;
             _frontierState = frontierState;
         }
 
-        [HttpGet]
+        [HttpGet()]
         public IActionResult Get()
+        {
+            var urls = _frontierState.CrawledUrls.Select(a => a.Key);
+
+            return Ok(urls);
+        }
+
+        [HttpGet("/api/crawler/getstructureddata")]
+        public IActionResult GetStructuredData()
         {
             var urls = _frontierState.CrawledUrls.Select(a => a.Key);
 
