@@ -43,6 +43,15 @@ namespace ZeroBrowser.Crawler.Api
             // Add framework services.            
             services.AddDbContext<CrawlerDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
 
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", builder =>
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader());
+            });
+
             services.AddSingleton<ICrawler, Core.Crawler>();
             services.AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>();
             services.AddSingleton<IBackgroundUrlQueue, BackgroundUrlQueue>();
@@ -82,6 +91,8 @@ namespace ZeroBrowser.Crawler.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors("AllowSpecificOrigin");
+
             if (env.IsDevelopment() || env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();

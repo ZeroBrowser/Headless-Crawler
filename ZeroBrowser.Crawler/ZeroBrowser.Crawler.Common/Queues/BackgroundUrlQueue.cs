@@ -20,14 +20,14 @@ namespace ZeroBrowser.Crawler.Common.Queues
             _logger = logger;
         }
 
-        public void EnqueteUrlItem(string url, bool isSeed = false)
+        public void EnqueteUrlItem(string url, bool isSeed = false, string parentUrl = null)
         {
             if (url == null)
             {
                 throw new ArgumentNullException(nameof(url));
             }
 
-            _crawlerContext = new CrawlerContext() { CurrentUrl = url, ParentUrl = url, IsSeed = isSeed };
+            _crawlerContext = new CrawlerContext() { CurrentUrl = url, ParentUrl = parentUrl, IsSeed = isSeed };
 
             _workItems.Enqueue(_crawlerContext);
             _signal.Release();

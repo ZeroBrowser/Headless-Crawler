@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using ZeroBrowser.Crawler.Common.Interfaces;
 using ZeroBrowser.Crawler.Common.Models;
 using ZeroBrowser.Crawler.Frontier;
@@ -28,17 +30,17 @@ namespace ZeroBrowser.Crawler.Api.Controllers
         [HttpGet()]
         public IActionResult Get()
         {
-            var urls = _frontierState.CrawledUrls.Select(a => a.Key);
+            var urls = _frontierState.ProcessedUrls.Select(a => a.Key);
 
             return Ok(urls);
         }
 
-        [HttpGet("/api/crawler/getstructureddata")]
+        [HttpGet("/api/Crawler/getstructureddata")]
         public IActionResult GetStructuredData()
         {
-            var urls = _frontierState.CrawledUrls.Select(a => a.Key);
+            var response = _frontierState.CrawledTree;
 
-            return Ok(urls);
+            return Ok(new { response?.Root?.Parent, response?.Root?.Value, response?.Root?.Children });
         }
 
 
@@ -66,7 +68,7 @@ namespace ZeroBrowser.Crawler.Api.Controllers
         {
             _logger.LogInformation($"* url recieved {parameter.SeedUrls.First()}{Environment.NewLine}");
 
-            _backgroundUrlQueue.EnqueteUrlItem(parameter.SeedUrls.First(), true);
+            _backgroundUrlQueue.EnqueteUrlItem(parameter.SeedUrls.First(), isSeed: true);
 
             return Ok();
         }

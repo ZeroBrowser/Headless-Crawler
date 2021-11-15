@@ -9,7 +9,7 @@ namespace ZeroBrowser.Crawler.Common.Interfaces
 {
     public interface IBackgroundUrlQueue
     {
-        void EnqueteUrlItem(string url, bool isSeed = false);
+        void EnqueteUrlItem(string url, bool isSeed = false, string parentUrl = null);
 
         Task<CrawlerContext> DequeueAsync();
     }

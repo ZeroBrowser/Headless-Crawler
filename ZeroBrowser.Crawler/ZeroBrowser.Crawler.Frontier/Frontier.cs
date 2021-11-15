@@ -39,21 +39,29 @@ namespace ZeroBrowser.Crawler.Frontier
                     _frontierState.SeedUri = result;
                 }
 
-                if (_frontierState.CrawledUrls.ContainsKey(url))
+                if (_frontierState.ProcessedUrls.ContainsKey(url))
                 {
                     //existing URL
-                    _frontierState.CrawledUrls[url].Total++;
+                    _frontierState.ProcessedUrls[url].Total++;
                 }
                 else
                 {
-                    //add to queue
                     _logger.LogInformation($"New URL: {url}{Environment.NewLine}");
+                    var parentPageInfo = new CrawledPageInfo { Url = crawlerContext.ParentUrl };
+                    var crawledPageInfo = new CrawledPageInfo { ParentUrl = (url == crawlerContext.ParentUrl) ? null : crawlerContext.ParentUrl , Total = 1, Url = url };
 
-                    _frontierState.CrawledUrls.TryAdd(url, new CrawledPageInfo { ParentUrl = crawlerContext.ParentUrl, Total = 1 });
+                    //add to dict
+                    _frontierState.ProcessedUrls.TryAdd(url, crawledPageInfo);
+
+                    //add to tree as
+                    var parent = _frontierState.CrawledTree.Find(parentPageInfo);
+                    _frontierState.CrawledTree.Add(crawledPageInfo, parent);
+
                     await _urlChannel.Insert(crawlerContext);
-
-                    return true;
                 }
+
+
+                return true;
             }
 
             return false;
