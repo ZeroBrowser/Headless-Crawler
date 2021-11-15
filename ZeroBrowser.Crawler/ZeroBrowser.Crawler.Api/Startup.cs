@@ -43,14 +43,22 @@ namespace ZeroBrowser.Crawler.Api
             // Add framework services.            
             services.AddDbContext<CrawlerDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
 
-
-            services.AddCors(options =>
+            if (_hostingEnvironment.IsDevelopment())
             {
-                options.AddPolicy("AllowSpecificOrigin", builder =>
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader());
-            });
+                services.AddCors(options =>
+                {
+                    options.AddPolicy("AllowSpecificOrigin", builder =>
+                        builder.WithOrigins("http://localhost:8080"));
+                });
+            }
+            else
+            {
+                services.AddCors(options =>
+                {
+                    options.AddPolicy("AllowSpecificOrigin", builder =>
+                        builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+                });
+            }
 
             services.AddSingleton<ICrawler, Core.Crawler>();
             services.AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>();
@@ -84,8 +92,6 @@ namespace ZeroBrowser.Crawler.Api
                     }
                 });
             });
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,13 +99,13 @@ namespace ZeroBrowser.Crawler.Api
         {
             app.UseCors("AllowSpecificOrigin");
 
-            if (env.IsDevelopment() || env.IsProduction())
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ZeroBrowser.Crawler.Api v1"));
             }
-            
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
