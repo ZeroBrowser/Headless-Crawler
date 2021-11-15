@@ -27,7 +27,7 @@ namespace ZeroBrowser.Crawler.Api
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseUrls("http://0.0.0.0:5010", "https://0.0.0.0:44326").UseStartup<Startup>();
+                    webBuilder.UseUrls("https://0.0.0.0:44326").UseStartup<Startup>();
                 });
     }
 }
