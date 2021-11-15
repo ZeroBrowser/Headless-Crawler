@@ -43,22 +43,13 @@ namespace ZeroBrowser.Crawler.Api
             // Add framework services.            
             services.AddDbContext<CrawlerDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
 
-            if (_hostingEnvironment.IsDevelopment())
+            services.AddCors(options =>
             {
-                services.AddCors(options =>
-                {
-                    options.AddPolicy("AllowSpecificOrigin", builder =>
-                        builder.WithOrigins("http://localhost:8080"));
-                });
-            }
-            else
-            {
-                services.AddCors(options =>
-                {
-                    options.AddPolicy("AllowSpecificOrigin", builder =>
-                        builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-                });
-            }
+                options.AddPolicy("AllowSpecificOrigin", builder =>
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader());
+            });
 
             services.AddSingleton<ICrawler, Core.Crawler>();
             services.AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>();
