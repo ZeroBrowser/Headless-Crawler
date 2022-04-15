@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using ZeroBrowser.Crawler.Api.HostedService;
@@ -15,6 +16,8 @@ using ZeroBrowser.Crawler.Common.Queues;
 using ZeroBrowser.Crawler.Core;
 using ZeroBrowser.Crawler.Frontier;
 using ZeroBrowser.Crawler.Puppeteer;
+using Serilog;
+using Serilog.Events;
 
 namespace ZeroBrowser.Crawler.Api
 {
@@ -40,6 +43,9 @@ namespace ZeroBrowser.Crawler.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Logger
+            Log.Information($"App.HeadlessBrowserUrl: {Configuration.GetSection("App.HeadlessBrowserUrl")}");
+
             // Add framework services.            
             services.AddDbContext<CrawlerDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
 
