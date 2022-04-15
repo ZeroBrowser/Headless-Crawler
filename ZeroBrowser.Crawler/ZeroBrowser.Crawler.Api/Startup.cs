@@ -45,6 +45,7 @@ namespace ZeroBrowser.Crawler.Api
         {
             //Logger
             Log.Information($"App.HeadlessBrowserUrl: {Configuration.GetSection("App.HeadlessBrowserUrl")}");
+            Console.WriteLine($"App.HeadlessBrowserUrl: {Configuration.GetSection("App.HeadlessBrowserUrl")}");
 
             // Add framework services.            
             services.AddDbContext<CrawlerDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
