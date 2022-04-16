@@ -14,9 +14,13 @@ WORKDIR "/src/ZeroBrowser.Crawler/ZeroBrowser.Crawler.Api"
 RUN dotnet build "ZeroBrowser.Crawler.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
+RUN dotnet dev-certs https -ep /app/aspnetapp.pfx --trust -p demo
 RUN dotnet publish "ZeroBrowser.Crawler.Api.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=publish /app/aspnetapp.pfx .
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password=demo
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/app/aspnetapp.pfx
 ENTRYPOINT ["dotnet", "ZeroBrowser.Crawler.Api.dll"]

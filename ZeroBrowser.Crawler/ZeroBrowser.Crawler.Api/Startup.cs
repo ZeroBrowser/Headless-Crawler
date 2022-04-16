@@ -44,7 +44,7 @@ namespace ZeroBrowser.Crawler.Api
         public void ConfigureServices(IServiceCollection services)
         {
             //Logger
-            Console.WriteLine($"App.HeadlessBrowserUrl: {Configuration.GetSection("App.HeadlessBrowserUrl").Value}");
+            Console.WriteLine($"App.HeadlessBrowserUrl: {Configuration.GetSection("App__HeadlessBrowserUrl").Value}");
             Console.WriteLine($"DefaultConnection: {Configuration.GetConnectionString("DefaultConnection")}");
 
             // Add framework services.            
